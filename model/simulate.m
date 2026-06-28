@@ -2,14 +2,15 @@ close all
 clear
 clc
 
-%
 tic
+
+%%
 
 fname = dir('*.mat'); % file name here
 fname = fname.name;
 load(fname) % load data
 
-%rank_order_atk
+% rank_order_atk
 
 min(min(min(pos_t(:,1,:,:))))
 max(max(max(pos_t(:,1,:,:))))

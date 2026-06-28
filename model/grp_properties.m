@@ -23,18 +23,6 @@ lw_xline = 3;
 mr_size = 10;
 label_fs = 30;
 
-spd_ini_emp = readmatrix('/Users/vivek/Library/CloudStorage/OneDrive-IndianInstituteofScience/IISc/phd/phd_thesis/1c_4n_project/bee_dance_tracks/new_tracks_19_6_25/spd_ini_emp.csv');
-spd_esp_emp = readmatrix('/Users/vivek/Library/CloudStorage/OneDrive-IndianInstituteofScience/IISc/phd/phd_thesis/1c_4n_project/bee_dance_tracks/new_tracks_19_6_25/spd_esp_emp.csv');
-spd_relax_emp = readmatrix('/Users/vivek/Library/CloudStorage/OneDrive-IndianInstituteofScience/IISc/phd/phd_thesis/1c_4n_project/bee_dance_tracks/new_tracks_19_6_25/spd_relax_emp.csv');
-
-pol_ini_emp = readmatrix('/Users/vivek/Library/CloudStorage/OneDrive-IndianInstituteofScience/IISc/phd/phd_thesis/1c_4n_project/bee_dance_tracks/new_tracks_19_6_25/pol_ini_emp.csv');
-pol_esp_emp = readmatrix('/Users/vivek/Library/CloudStorage/OneDrive-IndianInstituteofScience/IISc/phd/phd_thesis/1c_4n_project/bee_dance_tracks/new_tracks_19_6_25/pol_esp_emp.csv');
-pol_relax_emp = readmatrix('/Users/vivek/Library/CloudStorage/OneDrive-IndianInstituteofScience/IISc/phd/phd_thesis/1c_4n_project/bee_dance_tracks/new_tracks_19_6_25/pol_relax_emp.csv');
-
-gc_ini_emp = readmatrix('/Users/vivek/Library/CloudStorage/OneDrive-IndianInstituteofScience/IISc/phd/phd_thesis/1c_4n_project/bee_dance_tracks/new_tracks_19_6_25/gc_ini_emp.csv');
-gc_esp_emp = readmatrix('/Users/vivek/Library/CloudStorage/OneDrive-IndianInstituteofScience/IISc/phd/phd_thesis/1c_4n_project/bee_dance_tracks/new_tracks_19_6_25/gc_esp_emp.csv');
-gc_relax_emp = readmatrix('/Users/vivek/Library/CloudStorage/OneDrive-IndianInstituteofScience/IISc/phd/phd_thesis/1c_4n_project/bee_dance_tracks/new_tracks_19_6_25/gc_relax_emp.csv');
-
 %% loading all .mat files and calculating group properties
 
 fileInfo = dir('*.mat');

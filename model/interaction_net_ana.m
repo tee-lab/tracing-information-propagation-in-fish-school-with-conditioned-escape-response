@@ -4,8 +4,8 @@ clc
 
 %% load files
 
-fname = "sim_test_01";
-method = "_pm_"; % stat or pm
+fname = "sim";
+method = "_stat_"; % stat or pm
 phase = 2; % 1, 2, 3
 fnet_name = strcat('full_net', method, 'phase_', num2str(phase), '_', fname, '.csv');
 dnet_name = strcat('diff_net', method, 'phase_', num2str(phase), '_', fname, '.csv');
@@ -28,22 +28,22 @@ relax_color = "#097969";
 font_size = 25;
 
 %% Check if the time series are stationary
-
-if method == "_stat_"
-
-    is_stat_fname = strcat('is_stat_phase', num2str(1), '_', fname, '.csv');
-    is_stat = readmatrix(is_stat_fname);
-
-    figure(plt_count)
-    plt_count = plt_count + 1;
-
-    histogram(is_stat, 'Normalization', 'pdf')
-    h = gca;
-    h.XTick = [0, 1];
-    h.XTickLabel = {'Non-Stat', 'Stat'};
-    ylabel('PDF')
-
-end
+% 
+% if method == "_stat_"
+% 
+%     is_stat_fname = strcat('is_stat_phase', num2str(1), '_', fname, '.csv');
+%     is_stat = readmatrix(is_stat_fname);
+% 
+%     figure(plt_count)
+%     plt_count = plt_count + 1;
+% 
+%     histogram(is_stat, 'Normalization', 'pdf')
+%     h = gca;
+%     h.XTick = [0, 1];
+%     h.XTickLabel = {'Non-Stat', 'Stat'};
+%     ylabel('PDF')
+% 
+% end
 
 %% constructing full network
 
@@ -60,7 +60,8 @@ if ~isempty(full_net)
 
     full_int_graph = digraph(fn_follower, fn_leader, round(fn_avg_edges,3));
 
-    figure(plt_count)
+    fig = figure(plt_count);
+    fig.Position = [300, 1200, 800, 700];
     plt_count = plt_count + 1;
     plot(full_int_graph, 'LineWidth', (full_int_graph.Edges.Weight)*4, ...
         'EdgeLabel', round(full_int_graph.Edges.Weight,2),...
@@ -94,23 +95,4 @@ end
 % 
 % end
 
-%%
-
-% plt_count = plt_count + 1;
-% fig = figure(plt_count);
-% fig.Position = [300, 1200, 800, 700];
-% omega_ini = 0.7:0.1:1;
-% int_strength = [.67, 0.23, 0.21, 0.07];
-% 
-% plot(omega_ini, int_strength, 'o-', 'Color', '#A52A2A', 'LineWidth', 4, ...
-%         'MarkerFaceColor', '#A52A2A')
-% 
-% set(gca, 'XLim', [0.69 1.01], 'YLim', [0, 1], 'YTick', 0:0.2:1, ...
-%     'LineWidth', 2, 'Xcolor', 'k', 'YColor', 'k', ...
-%     'FontSize', 25, 'FontName', 'Helvetica')
-% 
-% xlabel('\omega(0)', 'FontSize', 25)
-% ylabel('Leadership consistency (1 -> 2)', 'FontSize', 25)
-
-% exportgraphics(gca, 'leadership_consistency.pdf', 'ContentType', 'vector')
 

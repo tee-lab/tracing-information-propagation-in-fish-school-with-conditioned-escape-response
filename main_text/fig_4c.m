@@ -12,7 +12,7 @@ max_delay = 75; % max delay
 min_ts_length = 10;
 no_treat = 3;
 tdiff = 1;
-min_lag = 5;
+min_lag = 10;
 p_val = 0.05;
 quant_cutoff = 0.95;
 min_edges = 0.05;
@@ -34,7 +34,8 @@ for e = 1:no_exp
     speed_fish = all_bd_data.(strcat('speed_t_ex_', num2str(e))); % input what speed data to use
     tcross_min = tcross_data.(strcat('tcross_min', num2str(e)));
     tcross_max = tcross_data.(strcat('tcross_max', num2str(e)));
-    rank_id_centre = tcross_data.(strcat('rank_id_centre', num2str(e)));
+    % rank_id = tcross_data.(strcat('rank_id_centre', num2str(e)));
+    rank_id = tcross_data.(strcat('rank_id_min', num2str(e)));
     time_light_on = all_bd_data.(strcat('frame_light_on_ex_', num2str(e)));
     tmin(e) = tcross_min;
 
@@ -44,12 +45,12 @@ for e = 1:no_exp
     last_time = tcross_max + diff_time + min_ts_length;
     t_esp = time_light_on; % here change to tcross_min or time_light_on
 
-    speed_trtment = speed_fish(rank_id_centre,1:(t_esp - diff_time));
-    speed_escape = speed_fish(rank_id_centre,t_esp:tcross_max);
-    speed_pescape = speed_fish(rank_id_centre,(tcross_max + diff_time):last_time);
+    speed_trtment = speed_fish(rank_id,1:(t_esp - diff_time));
+    speed_escape = speed_fish(rank_id,t_esp:tcross_max);
+    speed_pescape = speed_fish(rank_id,(tcross_max + diff_time):last_time);
 
     % network for speed
-    for treat_count = 3:3
+    for treat_count = 2:2
 
         % network during escape
         agent_i_spd = []; % leaders

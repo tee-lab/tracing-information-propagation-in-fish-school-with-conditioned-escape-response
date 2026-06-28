@@ -204,7 +204,7 @@ tcross_min_diff = fcross_tmin(rank_id(2:end)) - fcross_tmin(rank_id(1:end-1));
 tcross_max_diff = fcross_tmax(rank_id(2:end)) - fcross_tmax(rank_id(1:end-1));
 tcross_centre_diff = fcross_tcentre(rank_id_centre(2:end)) - fcross_tcentre(rank_id_centre(1:end-1));
 
-%% group polarisation and cohesion (dispersion)
+%% group polarisation
 
 vel_norm = vel_fish./(vecnorm(vel_fish,2,2)+eps);
 vn_x = squeeze(vel_norm(:,1,:)); % vx
@@ -234,8 +234,8 @@ hold on
 xline(1, '--r', 'LineWidth', lw_xline)
 hold off
 
-% legend({'P', 'P_x', 'P_y'}, 'Location', 'best')
-% legend('boxoff')
+legend({'P', 'P_x', 'P_y'}, 'Location', 'best')
+legend('boxoff')
 
 set(gca, 'XLim', [x_min_lim x_max_lim], 'YLim', [0, 1], 'YTick', 0:.2:1, ...
     'XMinorTick', 'on', 'YMinorTick', 'on', 'TickLength', [tl_major, tl_minor],...
@@ -248,7 +248,7 @@ ax.YAxis.MinorTickValues = 0:.1:1;
 xlabel('')
 ylabel('Polarisation')
 
-exportgraphics(gca, 'pol_ts_samp_data.pdf', 'ContentType', 'vector')
+%% cohestion
 
 gc_x = mean(pos_fish(:,1,:), 1, 'omitmissing'); % group centre - x 
 gc_y = mean(pos_fish(:,2,:), 1, 'omitmissing'); % group centre - y
@@ -314,10 +314,8 @@ ax.YAxis.MinorTickValues = 0:1:10;
 
 xlabel('')
 ylabel('Dispersion (cm)')
-% legend({'D', 'D_x', 'D_y'}, 'Location', 'best')
-% legend('boxoff')
-
-exportgraphics(gca, 'disp_ts_sample_data.pdf', 'ContentType', 'vector')
+legend({'D', 'D_x', 'D_y', 'D_wc'}, 'Location', 'best')
+legend('boxoff')
 
 %% speed time series
 
@@ -359,20 +357,10 @@ for i = 1:n
         set(gca, 'XTickLabel', []);
     end
 
-    % if i > 1
-    %     % For all plots EXCEPT the top one, hide the top label (8)
-    %     yticklabels({'0', '4', ''});
-    % else
-    %     % Keep all labels for the top plot
-    %     yticklabels({'0', '4', '8'});
-    % end
-
 end
 
 xlabel(t, 'Normalised time', 'FontSize', 25, 'FontName', 'Helvetica')
 ylabel(t, 'Speed (cm/s)', 'FontSize', 25, 'FontName', 'Helvetica')
-
-exportgraphics(fig, 'speed_ts_sample_data.pdf', 'ContentType', 'vector')
 
 %% x time series
 
@@ -419,5 +407,3 @@ ax.YAxis.MinorTickValues = 0:5:50;
 
 xlabel('Normalised time')
 ylabel('x (cm)')
-
-exportgraphics(fig, 'pos_x_ts_sample_data.pdf', 'ContentType', 'vector')

@@ -6,4 +6,4 @@ The codes are tested to run on MATLAB Version: 25.2.0.3177638 (R2025b).
 
 ## Raw data
 
-## Code for figure 1e and 2a,b, c
+## Code for figure 1e and 2a,b,c

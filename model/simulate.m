@@ -7,7 +7,7 @@ tic
 
 % fname = dir('*.mat');
 % fname = fname.name;
-fname = 'test_sim.mat';
+fname = 'sim.mat';
 load(fname) % load data
 
 %rank_order_atk
@@ -23,7 +23,7 @@ min(min(min(pos_t(:,2,:,:))))
 
 iter = round(no_it*rand());
 disp(iter)
-iter = 31;
+% iter = 33;
 exp = 1;
 
 figure(1)
@@ -77,7 +77,7 @@ t_et = size(pos_t,3);
 
 agent_col = {'red', 'green', 'black', 'magenta', 'purple'};
 
-for t = 2400:5:(t_et-1300)
+for t = 950:2:(t_et)
 
     pos_x = pos_t(:,1,t);
     pos_y = pos_t(:,2,t);

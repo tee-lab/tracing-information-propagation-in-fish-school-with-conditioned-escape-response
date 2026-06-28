@@ -6,16 +6,18 @@ clc
 
 all_bd_data = load("all_bd_data.mat"); % load all pos, vel data
 load("all_bd_data.mat", "dt", "n", "no_exp", "tank_max_x", "tank_min_x", "tank_middle", "del_step")
+
 time_scale = 2; % if 1 start time of escape is tcross_centre, if 2 then it is time of light on
 smooth_window = 5;
+
 min_cc_spd = 0.3; % minimum correlation strength
-min_cc_vel = 0.5;
 max_delay = 75; % max delay
+min_lag = 20; % minimum lag for correlation to be significant
 min_ts_length = 150; % minimum frames to calculate correlation
+
 no_treat = 3; % ini, escape, relax
 t_cut_min = -0.5;
 t_cut_max = 3;
-min_lag = 8; % minimum lag for correlation to be significant
 
 tcross_data = struct();
 
@@ -23,10 +25,12 @@ ini_color = "#33b1ff";
 esp_color = "#fa4d56";
 relax_color = "#198038";
 speed_plt_color = ["#6929c4", "#1192e8", "#005d5d", "#9f1853", "#d2a106"];
-font_size = 25;
-lw_plot = 2;
+font_size = 30;
+lw_plot = 3;
 lw_axis = 2;
 lw_xline = 4;
+tl_major = 0.02;
+tl_minor = 0.0005;
 
 %% storing all data
 
@@ -36,14 +40,16 @@ pol_y = []; % alignment along y axis
 grp_coh = []; % cohesion
 grp_coh_x = []; % cohesion along x axis
 grp_coh_y = []; % cohesion along y axis
-grp_coh_wo_con = [];
+grp_coh_wo_con = []; % group cohesion without conditioned fish
 
-tcd_all = []; % time crossing difference for centre of the barrier t2 - t1
-tcross_time_all = []; % time to cross after the first fish crossed
+tcd_all = []; % time crossing difference for min of the barrier t2 - t1
+tcross_time_all = []; % time to cross the min barrier after light is turned on
+tcross_normalised_time_all = []; % normalised time to cross min barrier after light is turned on
 tmind_all = []; % time crossing difference for 1st barrier
+tmind_normalised_all = []; % time crossing difference for 1st barrier in normalised time
 tmaxd_all = []; % time crossing difference for last barrier
 rank_ord_all = []; % ids of fish in the order the cross first, second and last barrier
-time_barrier_all = [];
+time_barrier_all = []; % time spent in the barrier
 
 speed_all = []; % speed 
 speed_ini_all = []; % store all speeds in initial phase
@@ -83,7 +89,7 @@ median_speed_ini = nan(n,no_exp);
 median_speed_esp = nan(n,no_exp);
 median_speed_relax = nan(n,no_exp);
 
-%%
+%% Group properties analysis
 
 for e = 1:no_exp
     
@@ -149,11 +155,14 @@ for e = 1:no_exp
     end
 
     % time when 1st fish crossed the 1st and 2nd border, and centre of the box
-    tcross_min = min(fcross_tmin);
-    tcross_max = max(fcross_tmax);
+    tcross_min = min(fcross_tmin); % time when first fish crossed the first barrier
+    tcross_max = max(fcross_tmax); % time when last fish crossed the last barrier
     tcross_centre_min = min(fcross_tcentre)*dt;
     tcross_centre_max = max(fcross_tcentre)*dt;
-
+    
+    escape_end_time = max(fcross_tmax)*dt; % time when the last fish crossed the first barrier
+    
+    % time spent in the barrier
     time_barrier = (max(fcross_tmax) - min(fcross_tmin))*dt;
     time_barrier_all = cat(1, time_barrier_all, time_barrier);
     
@@ -178,11 +187,11 @@ for e = 1:no_exp
     % center of the tank. if 2 then t = 0 is when light was turned on
     if time_scale == 1
 
-        t_plt = (t_plt - tcross_centre_min)/(tcross_centre_max - tcross_centre_min);
+        t_plt = (t_plt - tcross_centre_min)/(escape_end_time - tcross_centre_min);
 
     elseif time_scale == 2
 
-        t_plt = (t_plt - time_light_on)/(tcross_centre_max - time_light_on);
+        t_plt = (t_plt - time_light_on)/(escape_end_time - time_light_on);
 
     end
 
@@ -190,9 +199,16 @@ for e = 1:no_exp
     tcross_min_diff = nan(n,1);
     tcross_min_diff(1) = fcross_tmin(rank_id(1)) - (time_light_on/dt);
     if tcross_min_diff(1) < 0
-        x = 1;
+        % ideally this conditioned shouldnt be executed
+        fprintf('Fish crossed the barrier before green light in = %d', e);
     end
     tcross_min_diff(2:n) = fcross_tmin(rank_id(2:end)) - fcross_tmin(rank_id(1:end-1));
+    
+    % difference in crossing 1st barrier in normalised time
+    tcross_min_diff_normalised = nan(n,1);
+    fcross_tmin_normalised = (fcross_tmin*dt - time_light_on)/(escape_end_time - time_light_on);
+    tcross_min_diff_normalised(1) = fcross_tmin_normalised(rank_id(1));
+    tcross_min_diff_normalised(2:n) = fcross_tmin_normalised(rank_id(2:end)) - fcross_tmin_normalised(rank_id(1:end-1));
     
     tcross_max_diff = nan(n,1);
     tcross_max_diff(1) = fcross_tmax(rank_id(1)) - (time_light_on/dt);
@@ -217,9 +233,6 @@ for e = 1:no_exp
     pol_ini_all = cat(1, pol_ini_all, m_ini');
     pol_esp_all = cat(1, pol_esp_all, m_esp');
     pol_relax_all = cat(1, pol_relax_all, m_relax');
-
-    % m = smoothdata(m, 'gaussian', smooth_window);
-    % mx = smoothdata(mx, 'gaussian', smooth_window);
 
     p_temp = m(t_st:t_skip:t_end);
     px_temp = abs(mx(t_st:t_skip:t_end));
@@ -258,10 +271,6 @@ for e = 1:no_exp
     pos_gc_y = squeeze(pos_gc(:,2,:));
     pos_gc_y = abs(pos_gc_y);
     mean_gc_y = mean(pos_gc_y, 1);
-
-    % mean_dist_gc = smoothdata(mean_dist_gc, 'gaussian', smooth_window);
-    % mean_gc_x = smoothdata(mean_gc_x, 'gaussian', smooth_window);
-    % mean_gc_y = smoothdata(mean_gc_y, 'gaussian', smooth_window);
     
     % storing gc - 2d, x and y.
     gc_temp = mean_dist_gc(t_st:t_skip:t_end);
@@ -317,19 +326,25 @@ for e = 1:no_exp
     tcross_centre_diff = tcross_centre_diff*dt; % tcr_centre(2) - tcr_centre(1)
     tcross_max_diff = tcross_max_diff*dt;
 
-    % storing tcross data
+    % storing tcross data (t2-t1)
     tmind_temp = [(1:n)', tcross_min_diff];
+    tmind_temp_normalised = [(1:n)', tcross_min_diff_normalised];
+
     tcd_temp = [(1:n)', tcross_centre_diff]; % t2 - t1
     tmaxd_temp = [(1:n)', tcross_max_diff];
+    
+    % time to cross the first barrier after light is turned on
     tc_temp = [(1:n)', fcross_tmin(rank_id) - (time_light_on/dt)]; % crossing time
+    tc_temp_normalised = [(1:n)', (fcross_tmin(rank_id)*dt - (time_light_on))/(escape_end_time - time_light_on)];
+    
     tmind_all = cat(1, tmind_all, tmind_temp);
+    tmind_normalised_all = cat(1, tmind_normalised_all, tmind_temp_normalised);
     tcd_all = cat(1, tcd_all, tcd_temp);
     tmaxd_all = cat(1, tmaxd_all, tmaxd_temp);
     tcross_time_all = cat(1, tcross_time_all, tc_temp);
+    tcross_normalised_time_all = cat(1, tcross_normalised_time_all, tc_temp_normalised);
     
-    % plotting speed time series
-    % figure(fig_spd_ts)
-    % nexttile
+    % speed analysis
     speed_rank = speed_fish(rank_id,:);
     speed_ini = speed_rank(:,1:round((time_light_on/dt)));
     speed_esp = speed_rank(:,round((time_light_on/dt))+1:max(fcross_tmax));
@@ -347,18 +362,174 @@ for e = 1:no_exp
     spd_all_temp = [t_plt(t_plt >= t_cut_min & t_plt <= t_cut_max)', spd_all_temp'];
     speed_all = cat(1, speed_all, spd_all_temp);
 
+    % constructing network based on speed
+    addpath('/Users/vivek/Library/CloudStorage/OneDrive-IndianInstituteofScience/IISc/phd/phd_thesis/1c_4n_project/tracked_data');
+
+    diff_time = 1;
+    % last_time = tcross_max + diff_time + min_ts_length;
+    last_time = tcross_max + min_ts_length;
+    t_esp = floor(time_light_on/dt); % here change to tcross_min or time_light_on
+
+    speed_trtment = speed_fish(rank_id,1:(t_esp - diff_time));
+    speed_escape = speed_fish(rank_id,(t_esp - diff_time):(tcross_max + diff_time));
+    speed_pescape = speed_fish(rank_id,(tcross_max + diff_time):last_time);
+
+    vel_trtment = vel_norm(rank_id_centre, :, 1:(t_esp - diff_time));
+    vel_escape = vel_norm(rank_id_centre, :, (t_esp - diff_time):(tcross_max + diff_time)); % velocity only when they are crossing
+    vel_pescape = vel_norm(rank_id_centre, :, (tcross_max + diff_time):last_time);
+
+    % network for speed
+    for treat_count = 1:no_treat
+
+        % network during escape
+        agent_i_spd = []; % leaders
+        agent_j_spd = []; % followers
+
+        if treat_count == 1
+            speed_cc = speed_trtment;
+        elseif treat_count == 2
+            speed_cc = speed_escape;
+        elseif treat_count == 3
+            speed_cc = speed_pescape;
+        end
+
+        if size(speed_cc,2) < min_ts_length
+            continue
+        end
+
+        for i = 1:n
+
+            spd_i = speed_cc(i,:); % speed of fish i
+            spd_i = smoothdata(spd_i, 'gaussian', smooth_window); % smooth the data
+            spd_i = spd_i - mean(spd_i); % s - \bar{s}
+
+            for j = 1:n
+
+                if j ~= i
+
+                    % similarly as above for fish, j
+                    spd_j = speed_cc(j,:);
+                    spd_j = smoothdata(spd_j, 'gaussian', smooth_window);
+                    spd_j = spd_j - mean(spd_j);
+
+                    % calculate speed cross-correlation for fish i and j.
+                    % [del_spd_cc, tlag] = xcorr(del_spd_i, del_spd_j, max_delay, 'normalized');
+
+                    [cor_ut,cor_u,tau_lag,sig_ci]=getCor_scalar(spd_i,spd_j,max_delay);
+
+                    if max(cor_u) > min_cc_spd && tau_lag(1) > 0 && abs(tau_lag(1)) >= min_lag
+                        
+                        if treat_count == 2
+                            cc_lag_esp = [cc_lag_esp, tau_lag(1)];
+                        elseif treat_count == 3
+                            cc_lag_relax = [cc_lag_relax, tau_lag(1)];
+                        end
+         
+                        % plot(cor_ut*dt, cor_u)
+                        % yline(min_cc_spd)
+                        % hold on
+                        agent_i_spd = [agent_i_spd i];
+                        agent_j_spd = [agent_j_spd j];
+                    end
+
+                end
+
+            end
+
+        end
+
+        if treat_count == 1
+            spd_leader_ini = [spd_leader_ini, agent_i_spd];
+            spd_follower_ini = [spd_follower_ini, agent_j_spd];
+        elseif treat_count == 2
+            spd_leader_esp = [spd_leader_esp, agent_i_spd];
+            spd_follower_esp = [spd_follower_esp, agent_j_spd];
+        elseif treat_count == 3
+            spd_leader_rlx = [spd_leader_rlx, agent_i_spd];
+            spd_follower_rlx = [spd_follower_rlx, agent_j_spd];
+        end
+
+    end
+
 end
 
 save('tcross_data.mat', '-struct', "tcross_data")
 
-%% group polarisation
+%% Avg network
+
+avg_esp_leader = [];
+avg_esp_follower = [];
+avg_esp_edges = [];
+min_edges = 0.1;
+
+for l = 1:n
+
+    for f = 1:n
+
+        if l < f
+
+            no_l_lead = find(spd_leader_esp == l & spd_follower_esp == f);
+            no_l_lead = length(no_l_lead);
+            no_f_lead = find(spd_leader_esp == f & spd_follower_esp == l);
+            no_f_lead = length(no_f_lead);
+            avg_edges_lf = (no_l_lead - no_f_lead)/no_exp;
+            if avg_edges_lf > 0 && abs(avg_edges_lf) > min_edges 
+                avg_esp_leader = [avg_esp_leader, l];
+                avg_esp_follower = [avg_esp_follower, f];
+                avg_esp_edges = [avg_esp_edges, avg_edges_lf];
+            elseif avg_edges_lf < 0 && abs(avg_edges_lf) > min_edges
+                avg_esp_leader = [avg_esp_leader, f];
+                avg_esp_follower = [avg_esp_follower, l];
+                avg_esp_edges = [avg_esp_edges, abs(avg_edges_lf)];
+            end
+
+        end
+
+    end
+
+end
 
 plt_count = 0;
+
+plt_count = plt_count + 1;
+fig = figure(plt_count);
+fig.Position = [300, 1200, 900, 800];
+
+avg_esp_graph = digraph(avg_esp_follower, avg_esp_leader, avg_esp_edges);
+plot(avg_esp_graph, 'LineWidth', round(avg_esp_graph.Edges.Weight,2)*6, ...
+    'EdgeLabel', round(avg_esp_graph.Edges.Weight,2), ...
+    'EdgeFontSize', 15+avg_esp_graph.Edges.Weight, ...
+    'Layout', 'layered', 'EdgeFontWeight', 'bold', ...
+    'ArrowSize', 20, 'EdgeColor', 'magenta', 'NodeColor', 'magenta')
+
+%% plotting average plots
+
+% time spent in the barrier
+
+plt_count = plt_count + 1;
+fig = figure(plt_count);
+fig.Position = [300, 1200, 800, 700];
+
+tb_edges = 0:0.5:7;
+histogram(time_barrier_all, tb_edges, 'Normalization', 'pdf')
+xlabel('Time spend in the barrier')
+ylabel('PDF')
+set(gca, 'XLim', [-0.5 7], ...
+    'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', 'FontSize', font_size, ...
+    'FontName', 'Helvetica')
+
+sprintf('Fraction of times conditioned fish is not first to cross last barrier: %f', ...
+    round(length(find(rank_ord_all(:,1) ~= rank_ord_all(:,3)))/size(rank_ord_all,1),3))
+
+%% group polarisation
+
+x_min_lim = -0.5;
+x_max_lim = 3;
 
 no_pol_edges = 21;
 no_time_edges = 51;
 [~, pol_sort_id] = sort(pol(:,1));
-pol = pol(pol_sort_id, :);
+pol = pol(pol_sort_id,:);
 
 t_edges = linspace(t_cut_min, t_cut_max, no_time_edges);
 pol_edges = linspace(0, 1, no_pol_edges);
@@ -451,20 +622,24 @@ hold off
 
 legend({'P', 'P_x', 'P_y'}, 'Location', 'northeast', 'FontSize', 32)
 legend('Box', 'off')
-xlabel('t_n')
-ylabel('Polarisation')
-set(gca, 'XLim', [-0.5 3], 'YLim', [0,1], ...
-    'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', 'FontSize', font_size, ...
-    'FontName', 'Helvetica')
 
-% exportgraphics(gca, 'pol_ts_data.pdf', 'ContentType', 'vector')
+set(gca, 'XLim', [x_min_lim x_max_lim], 'YLim', [0, 1], 'YTick', 0:.2:1, ...
+    'XMinorTick', 'on', 'YMinorTick', 'on', 'TickLength', [tl_major, tl_minor],...
+    'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
+    'FontSize', font_size, 'FontName', 'Helvetica')
+ax = gca;
+ax.XAxis.MinorTickValues = -1:0.5:x_max_lim;  % Minor X-ticks every 0.1
+ax.YAxis.MinorTickValues = 0:.1:1;
+
+xlabel('Normalised time')
+ylabel('Mean polarisation')
 
 %% Group cohesion 2d.
 
 [~, gc_sort_id] = sort(grp_coh(:,1));
 grp_coh = grp_coh(gc_sort_id, :);
 
-t_edges = linspace(t_cut_min, t_cut_max, 50);
+t_edges = linspace(t_cut_min, t_cut_max, no_time_edges);
 min_gc = min(grp_coh(:,2));
 max_gc = max(grp_coh(:,2));
 gc_edges = linspace(min_gc, max_gc, 31);
@@ -491,7 +666,7 @@ end
 [~, gcx_sort_id] = sort(grp_coh_x(:,1));
 grp_coh_x = grp_coh_x(gcx_sort_id, :);
 
-t_edges = linspace(t_cut_min, t_cut_max, 50);
+t_edges = linspace(t_cut_min, t_cut_max, no_time_edges);
 min_gcx = min(grp_coh_x(:,2));
 max_gcx = max(grp_coh_x(:,2));
 gcx_edges = linspace(min_gcx, max_gcx, 31);
@@ -518,7 +693,7 @@ end
 [~, gcy_sort_id] = sort(grp_coh_y(:,1));
 grp_coh_y = grp_coh_y(gcy_sort_id, :);
 
-t_edges = linspace(t_cut_min, t_cut_max, 50);
+t_edges = linspace(t_cut_min, t_cut_max, no_time_edges);
 min_gcy = min(grp_coh_y(:,2));
 max_gcy = max(grp_coh_y(:,2));
 gcy_edges = linspace(min_gcy, max_gcy, 31);
@@ -540,10 +715,12 @@ for i = 1:size(histcount_gcy,1)
     median_gcy(i) = median(gc_temp);
 end
 
+% group cohesion with conditioned fish
+
 [~, gc_wo_con_sort_id] = sort(grp_coh_wo_con(:,1));
 grp_coh_wo_con = grp_coh_wo_con(gc_wo_con_sort_id, :);
 
-t_edges = linspace(t_cut_min, t_cut_max, 50);
+t_edges = linspace(t_cut_min, t_cut_max, no_time_edges);
 min_gc_wo_con = min(grp_coh_wo_con(:,2));
 max_gc_wo_con = max(grp_coh_wo_con(:,2));
 gc_wc_edges = linspace(min_gc_wo_con, max_gc_wo_con, 31);
@@ -590,16 +767,19 @@ hold off
 legend({'D', 'D_x', 'D_y', 'D_{wc}'}, 'Location', 'northeast', 'FontSize', 32)
 legend('Box', 'off')
 
-xlabel('t_n')
-ylabel('Dispersion (cm)')
+xlabel('Normalised time')
+ylabel('Mean dispersion (cm)')
 
-set(gca, 'XLim', [-0.5 3], 'YLim', [0,8], ...
+set(gca, 'XLim', [x_min_lim x_max_lim], 'YLim', [0,8], 'YTick', 0:2:10, ...
+    'XMinorTick', 'on', 'YMinorTick', 'on', 'TickLength', [0.02, 0.001],...
     'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
     'FontSize', font_size, 'FontName', 'Helvetica')
 
-% exportgraphics(gca, 'disp_ts_data.pdf', 'ContentType', 'vector')
+ax = gca;
+ax.XAxis.MinorTickValues = -1:0.5:x_max_lim;  % Minor X-ticks every 0.1
+ax.YAxis.MinorTickValues = 0:1:10;
 
-%% Time difference
+%% Time difference between crossing the first, centre and last barrier
 
 mean_td_min = nan(1,n);
 std_td_min = nan(1,n);
@@ -645,8 +825,8 @@ end
 
 % from model
 
-tc_min_model = readmatrix('tc_min_mual_0.1_muat_2.3_muesp_1.25_K_4_k_2_sight_2.36_gamma_0.25_omegaini_0.7.csv');
-st_id = 2;
+tc_min_model = readmatrix('tc_min_mual_0.56_muat_36.8_muesp_20_K_4_k_2_sight_2.36_gamma_1_omegaini_0.7.csv');
+st_id = 2; % start id - should 1 (include cond fish) or 2 (exclude cond fish)
 mean_id = 2;
 se_id = 4;
 mean_td_min_model = tc_min_model(st_id:end,mean_id)*dt;
@@ -656,14 +836,13 @@ plt_count = plt_count + 1;
 fig = figure(plt_count);
 fig.Position = [300, 1200, 800, 700];
 
-st_id = 2; % start id - should 1 (include cond fish) or 2 (exclude cond fish)
-errorbar((st_id:n) - 0.05, mean_td_min(st_id:end), se_td_min(st_id:end), 'LineStyle', "none", ...
-    "Marker", "o", "Color", ini_color, 'LineWidth', lw_plot, 'MarkerSize', ...
-    10, 'MarkerFaceColor', ini_color)
+errorbar((st_id:n) - 0.05, mean_td_min(st_id:end), se_td_min(st_id:end), ...
+    'LineStyle', "none", "Marker", "o", "Color", esp_color, ...
+    'LineWidth', lw_plot, 'MarkerSize', 10, 'MarkerFaceColor', esp_color)
 hold on
 errorbar((st_id:n) + 0.05, mean_td_min_model, se_td_min_model, 'o', ...
-    'LineWidth', lw_plot, 'Color', esp_color, 'MarkerSize', 10, ...
-    'MarkerFaceColor', esp_color)
+    'LineWidth', lw_plot, 'Color', ini_color, 'MarkerSize', 10, ...
+    'MarkerFaceColor', ini_color)
 
 % hold on
 % errorbar((st_id:n), mean_td_centre(st_id:end), se_td_centre(st_id:end), 'LineStyle', "none", ...
@@ -677,22 +856,65 @@ errorbar((st_id:n) + 0.05, mean_td_min_model, se_td_min_model, 'o', ...
 % legend({'Experiment', 'Model'}, 'Location', 'best')
 % legend('Box', 'off')
 
-set(gca, 'XLim', [st_id-0.2 n+0.2], 'XTick', st_id:n, ...
-    'YLim', [0, 4], 'YTick', 0:4,...
+set(gca, 'XLim', [st_id-0.5 n+0.2], 'XTick', st_id:n, ...
+    'YLim', [0,1], 'YTick', 0:0.2:1, ...
     'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
     'FontSize', font_size, 'FontName', 'Helvetica')
 
-xlabel('Crossing rank', 'FontSize', 23)
-ylabel('Time since previous fish crossed (s)', 'FontSize', 23)
+xlabel('Crossing rank', 'FontSize', 27)
+ylabel('Time since previous crossed (s)', 'FontSize', 27)
 
-% set(gca, 'XLim', [st_id-0.2 n+0.2], 'XTick', st_id:n, 'XTickLabel', {"0", "1", "2", "3", "4"}, ...
-%     'YLim', [0, 11], ...
-%     'LineWidth', 2, 'Xcolor', 'k', 'YColor', 'k', 'FontWeight', 'bold', ...
-%     'FontSize', font_size)
+% time difference in crossing first barrier in normalised time
 
-% exportgraphics(gca, 'time_sice_prev_fish_data.pdf', 'ContentType', 'vector')
+mean_td_min_normalised = nan(1,n);
+std_td_min_normalised = nan(1,n);
+se_td_min_normalised = nan(1,n);
+median_td_min_normalised = nan(1,n);
 
-%% time to cross
+for i = 1:n
+    td_id = tmind_normalised_all(:,1) == i;
+    td_temp = tmind_normalised_all(td_id,2);
+    mean_td_min_normalised(i) = mean(td_temp);
+    std_td_min_normalised(i) = std(td_temp);
+    se_td_min_normalised(i) = (std(td_temp))/sqrt(length(td_temp));
+    median_td_min_normalised(i) = median(td_temp);
+end
+
+% for model
+
+td_min_normalised_model = readmatrix('tc_min_normalisedmual_0.56_muat_36.8_muesp_20_K_4_k_2_sight_2.36_gamma_1_omegaini_0.7.csv');
+mean_td_min_normalised_model = td_min_normalised_model(st_id:end,mean_id);
+se_td_min_normalised_model = td_min_normalised_model(st_id:end,se_id);
+
+plt_count = plt_count + 1;
+fig = figure(plt_count);
+fig.Position = [300, 1200, 800, 700];
+
+errorbar((st_id:n) - 0.05, mean_td_min_normalised(st_id:end), ...
+    se_td_min_normalised(st_id:end), 'LineStyle', "none", ...
+    "Marker", "o", "Color", esp_color, 'LineWidth', lw_plot, 'MarkerSize', ...
+    10, 'MarkerFaceColor', esp_color)
+hold on
+errorbar((st_id:n) + 0.05, mean_td_min_normalised_model, ...
+    se_td_min_normalised_model, 'LineStyle', "none", ...
+    "Marker", "o", "Color", ini_color, 'LineWidth', lw_plot, 'MarkerSize', ...
+    10, 'MarkerFaceColor', ini_color)
+
+legend({'Experiment', 'Model'}, 'Location', 'south')
+legend('Box', 'off')
+
+set(gca, 'XLim', [st_id-0.5 n+0.2], 'XTick', st_id:n, ...
+    'YLim', [0,.25], 'YTick', 0:0.1:0.25, ...
+    'YMinorTick', 'on', 'TickLength', [tl_major, tl_minor],...
+    'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
+    'FontSize', font_size, 'FontName', 'Helvetica')
+ax = gca;
+ax.YAxis.MinorTickValues = 0:.05:1;
+
+xlabel('Crossing rank')
+ylabel('Normalised time since \newline previous fish crossed')
+
+%% time to cross 1st barrier after turning on green light
 
 mean_tcross = nan(1,n);
 std_tcross = nan(1,n);
@@ -700,6 +922,7 @@ se_tcross = nan(1,n);
 median_tcross = nan(1,n);
 
 st_id = 1;
+
 for i = st_id:n
     tc_id = tcross_time_all(:,1) == i;
     td_temp = tcross_time_all(tc_id,2);
@@ -712,35 +935,83 @@ end
 
 % model 
 
-tc_model = readmatrix('mean_tc_model.csv');
-mean_tc_min_model = tc_model(:,mean_id);
-se_tc_min_model = tc_model(:,se_id);
+tcross_gl_model = readmatrix('tc_gl_min_mual_0.56_muat_36.8_muesp_20_K_4_k_2_sight_2.36_gamma_1_omegaini_0.7.csv');
+mean_tcross_gl_model = tcross_gl_model(st_id:end,mean_id);
+se_tcross_gl_model = tcross_gl_model(st_id:end,se_id);
 
 plt_count = plt_count + 1;
 fig = figure(plt_count);
 fig.Position = [300, 1200, 800, 700];
 
-errorbar((st_id:n) - 0.075, mean_tcross(st_id:n), se_tcross(st_id:n), 'LineStyle', "none", ...
-    "Marker", "o", "Color", ini_color, 'LineWidth', lw_plot, 'MarkerSize', ...
-    10, 'MarkerFaceColor', ini_color)
-hold on
-errorbar((st_id:n) + 0.075, mean_tc_min_model(st_id:n), se_tc_min_model, 'LineStyle', "none", ...
+errorbar((st_id:n) - 0.075, mean_tcross, se_tcross, 'LineStyle', "none", ...
     "Marker", "o", "Color", esp_color, 'LineWidth', lw_plot, 'MarkerSize', ...
     10, 'MarkerFaceColor', esp_color)
+hold on
+errorbar((st_id:n) + 0.075, mean_tcross_gl_model, se_tcross_gl_model, ...
+    'LineStyle', "none", "Marker", "o", "Color", ini_color, ...
+    'LineWidth', lw_plot, 'MarkerSize', 10, 'MarkerFaceColor', ini_color)
 
 legend({'Experiment', 'Model'}, 'Location', 'south')
 legend('Box', 'off', 'Orientation', 'vertical', 'EdgeColor', [0.9, 0.9, 0.9], ...
     'LineWidth', 1)
 
-set(gca, 'XLim', [st_id-0.2 n+0.2], 'XTick', st_id:n, ...
-    'YLim', [0,18], 'YTick', 0:3:18, ...
+set(gca, 'XLim', [st_id-0.5 n+0.2], 'XTick', st_id:n, ...
+    'YLim', [0,4], 'YTick', 0:1:4, ...
     'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
     'FontSize', font_size, 'FontName', 'Helvetica')
 
-xlabel('Crossing rank', 'FontSize', 23)
-ylabel('Time since green light on (s)', 'FontSize', 23)
+xlabel('Crossing rank', 'FontSize', 27)
+ylabel('Time since green light on (s)', 'FontSize', 27)
 
-% exportgraphics(gca, 'time_sice_green_light_on_data.pdf', 'ContentType', 'vector')
+% time to cross after greenlight in normalised time
+
+mean_tcross_normalised = nan(1,n);
+std_tcross_normalised = nan(1,n);
+se_tcross_normalised = nan(1,n);
+median_tcross_normalised = nan(1,n);
+
+st_id = 1;
+for i = st_id:n
+    tc_id = tcross_normalised_time_all(:,1) == i;
+    td_temp = tcross_normalised_time_all(tc_id,2);
+    mean_tcross_normalised(i) = mean(td_temp);
+    std_tcross_normalised(i) = std(td_temp);
+    se_tcross_normalised(i) = (std(td_temp))/sqrt(length(td_temp));
+    median_tcross_normalised(i) = median(td_temp);
+end
+
+% model
+
+tcross_gl_normalised_model = readmatrix('tc_gl_min_normalised_mual_0.56_muat_36.8_muesp_20_K_4_k_2_sight_2.36_gamma_1_omegaini_0.7.csv');
+mean_tc_gl_normalised_model = tcross_gl_normalised_model(st_id:end,mean_id);
+se_tc_gl_normalised_model = tcross_gl_normalised_model(st_id:end,se_id);
+
+plt_count = plt_count + 1;
+fig = figure(plt_count);
+fig.Position = [300, 1200, 800, 700];
+
+errorbar((st_id:n) - 0.075, mean_tcross_normalised, ...
+    se_tcross_normalised, 'LineStyle', "none", ...
+    "Marker", "o", "Color", esp_color, 'LineWidth', lw_plot, 'MarkerSize', ...
+    10, 'MarkerFaceColor', esp_color)
+hold on 
+errorbar((st_id:n) - 0.075, mean_tc_gl_normalised_model, se_tc_gl_normalised_model,...
+    zeros(5,1), 'LineStyle', "none", "Marker", "o", "Color", ini_color, ...
+    'LineWidth', lw_plot, 'MarkerSize', 10, 'MarkerFaceColor', ini_color)
+
+legend({'Experiment', 'Model'}, 'Location', 'south')
+legend('Box', 'off')
+
+xlabel('Crossing rank')
+ylabel('Normalised time since \newline green light on', 'HorizontalAlignment', 'center')
+
+set(gca, 'XLim', [st_id-0.2 n+0.2], 'XTick', st_id:n, ...
+    'YLim', [0,1], 'YTick', 0:0.2:1, ...
+    'YMinorTick', 'on', 'TickLength', [tl_major, tl_minor], ...
+    'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
+    'FontSize', font_size, 'FontName', 'Helvetica')
+ax = gca;
+ax.YAxis.MinorTickValues = 0:.1:1;
 
 %% plotting all speed
 
@@ -751,14 +1022,15 @@ fig.Position = [300, 1200, 800, 700];
 min_spd = min(min(speed_all(:,2:end)));
 max_spd = max(max(speed_all(:,2:end)));
 
-for i = 2:n+1
+[~, spd_sort_id] = sort(speed_all(:,1));
+speed_all = speed_all(spd_sort_id,:);
 
-    [~, spd_sort_id] = sort(speed_all(:,1));
-    speed_all = speed_all(spd_sort_id, :);
+for i = 2:n+1    
 
-    t_edges = linspace(t_cut_min, t_cut_max, 51);
+    t_edges = linspace(t_cut_min, t_cut_max, no_time_edges);
     spd_edges = linspace(min_spd, max_spd, 31);
-    [histcount_spd, ~, ~, t_bins, spd_bins] = histcounts2(speed_all(:,1), speed_all(:,i), t_edges, spd_edges);
+    [histcount_spd, ~, ~, t_bins, spd_bins] = histcounts2(speed_all(:,1), ...
+        speed_all(:,i), t_edges, spd_edges);
 
     t_edges = t_edges(1:end-1) + (t_edges(2) - t_edges(1))/2;
     spd_edges = spd_edges(1:end-1) + (spd_edges(2) - spd_edges(1))/2;
@@ -776,7 +1048,8 @@ for i = 2:n+1
         median_spd_i(j) = median(spd_temp);
     end
 
-    errorbar(t_edges, mean_spd_i, se_spd_i, '-o', 'LineWidth', 1.5, ...
+    % plot(t_edges, mean_spd_i, '-o')
+    errorbar(t_edges, mean_spd_i, se_spd_i, '-o', 'LineWidth', 2, ...
         'Color', speed_plt_color(i-1))
     hold on
 
@@ -791,14 +1064,16 @@ legend({'CR-1', 'CR-2', 'CR-3', 'CR-4', 'CR-5'}, ...
     'Location', 'northeast', 'FontSize', 32)
 legend('box','off')
 
-set(gca, 'XLim', [-0.5 3], 'YLim', [0, 5], 'YTick', 0:0.5:5, ...
+set(gca, 'XLim', [-0.5 3], 'YLim', [0,20], 'YTick', 0:4:20,...
+    'XMinorTick', 'on', 'YMinorTick', 'on', 'TickLength', [tl_major, tl_minor],...
     'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
     'FontSize', font_size, 'FontName', 'Helvetica')
+ax = gca;
+ax.XAxis.MinorTickValues = -1:0.5:x_max_lim;  % Minor X-ticks every 0.1
+ax.YAxis.MinorTickValues = 0:2:30;
 
-xlabel('t_n')
-ylabel('Speed (cm/s)')
-
-% exportgraphics(gca, 'speed_ts_data.pdf', 'ContentType', 'vector')
+xlabel('Normalised time')
+ylabel('Mean speed (cm/s)')
 
 %% distance travelled by naive and conditioned fish in ini phase
 
@@ -818,11 +1093,14 @@ mean_dist_travel_relax = mean(dist_travelled_relax,1);
 std_dist_travel_relax = std(dist_travelled_relax,1);
 std_error_dt_relax = std_dist_travel_relax/sqrt(no_exp);
 
-errorbar(1:n, mean_dist_travel_ini, std_error_dt_ini, 'o', ...
-    'LineWidth', lw_plot)
+errorbar(1:n, mean_dist_travel_ini, std_error_dt_ini, 'LineStyle', "none", "Marker", "o", ...
+    "Color", ini_color, 'LineWidth', lw_plot, 'MarkerSize', 10, ...
+    'MarkerFaceColor', ini_color)
 hold on
-errorbar(1:n, mean_dist_travel_relax, std_error_dt_relax, 'o', ...
-    'LineWidth', lw_plot)
+errorbar(1:n, mean_dist_travel_relax, std_error_dt_relax, ...
+    'LineStyle', "none", "Marker", "o", "Color", relax_color, ...
+    'LineWidth', lw_plot, 'MarkerSize', 10, 'MarkerFaceColor', relax_color)
+
 set(gca, 'XLim', [.9 5.1], 'XTick', 1:5, 'YLim', [0,100], ...
     'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
     'FontSize', font_size, 'FontName', 'Helvetica')
@@ -832,8 +1110,6 @@ legend('Box', 'off')
 
 xlabel('Crossing rank')
 ylabel('Distance travelled (cm)')
-
-% exportgraphics(gca, 'dist_trav_ini_relax_data.pdf', 'ContentType', 'vector')
 
 %% mean speed by naive and conditioned fish in ini
 
@@ -851,13 +1127,16 @@ mean_spd_relax = mean(speed_relax_all,2);
 std_spd_relax = std(speed_relax_all,0,2);
 std_err_spd_relax = (std_spd_relax)/sqrt(no_exp);
 
-errorbar((1:n)-0.1, mean_spd_ini, std_err_spd_ini, 'o', ...
-    'LineWidth', lw_plot)
-hold on
-errorbar((1:n)+0.1, mean_spd_relax, std_err_spd_relax, 'o', ...
-    'LineWidth', lw_plot);
 
-set(gca, 'XLim', [.7 5.3], 'XTick', 1:5, 'YLim', [0,2], 'YTick', 0:0.5:2, ...
+errorbar((1:n)-0.1, mean_spd_ini, std_err_spd_ini, ...
+    'LineStyle', "none", "Marker", "o", "Color", ini_color, ...
+    'LineWidth', lw_plot, 'MarkerSize', 10, 'MarkerFaceColor', ini_color)
+hold on
+errorbar((1:n)+0.1, mean_spd_relax, std_err_spd_relax, ...
+    'LineStyle', "none", "Marker", "o", "Color", relax_color, ...
+    'LineWidth', lw_plot, 'MarkerSize', 10, 'MarkerFaceColor', relax_color);
+
+set(gca, 'XLim', [.5 5.5], 'XTick', 1:5, 'YLim', [0,8], 'YTick', 0:2:8, ...
     'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
     'FontSize', font_size, 'FontName', 'Helvetica')
 
@@ -867,24 +1146,11 @@ ylabel('Mean speed (cm/s)')
 legend({'Initial', 'Relax'}, 'Location', 'best')
 legend('Box', 'off')
 
-% exportgraphics(gca, 'speed_ini_relax_data.pdf', 'ContentType', 'vector')
-
 %% plotting distributions of speeds in initial, eps and relax phase
-pdf_lw = 3;
 
 plt_count = plt_count + 1;
 fig = figure(plt_count);
 fig.Position = [300, 1200, 800, 700];
-
-spd_ini_model = readmatrix("spd_ini_hist_model.csv");
-spd_ini_edges_model = spd_ini_model(:,1);
-spd_ini_hist_model = spd_ini_model(:,2);
-spd_esp_model = readmatrix("spd_esp_hist_model.csv");
-spd_esp_edges_model = spd_esp_model(:,1);
-spd_esp_hist_model = spd_esp_model(:,2);
-spd_relax_model = readmatrix('spd_relax_hist_model.csv');
-spd_relax_edges_model = spd_relax_model(:,1);
-spd_relax_hist_model = spd_relax_model(:,2);
 
 speed_ini_all = speed_ini_all(:);
 speed_escape_all = speed_escape_all(:);
@@ -894,41 +1160,53 @@ speed_relax_all = speed_relax_all(:);
 [spd_esp_hist, spd_esp_edges] = histcounts(speed_escape_all, 'Normalization', 'pdf');
 [spd_relax_hist, spd_relax_edges] = histcounts(speed_relax_all, 'Normalization', 'pdf');
 
-plot(spd_ini_edges(1:end-1), spd_ini_hist, '-', 'Color', ini_color, 'LineWidth', pdf_lw)
+% model
+
+spd_ini_model = readmatrix('spd_ini_hist_mual_0.56_muat_36.8_muesp_20_K_4_k_2_sight_2.36_gamma_1_omegaini_0.7.csv');
+spd_ini_edges_model = spd_ini_model(:,1);
+spd_ini_hist_model = spd_ini_model(:,2);
+spd_esp_model = readmatrix('spd_esp_hist_mual_0.56_muat_36.8_muesp_20_K_4_k_2_sight_2.36_gamma_1_omegaini_0.7.csv');
+spd_esp_edges_model = spd_esp_model(:,1);
+spd_esp_hist_model = spd_esp_model(:,2);
+spd_relax_model = readmatrix('spd_relax_hist_mual_0.56_muat_36.8_muesp_20_K_4_k_2_sight_2.36_gamma_1_omegaini_0.7.csv');
+spd_relax_edges_model = spd_relax_model(:,1);
+spd_relax_hist_model = spd_relax_model(:,2);
+
+plot(spd_ini_edges(1:end-1), spd_ini_hist, '-', ...
+    'Color', ini_color, 'LineWidth', lw_plot)
 hold on
-plot(spd_esp_edges(1:end-1), spd_esp_hist, '-', 'Color', esp_color, 'LineWidth', pdf_lw)
+plot(spd_esp_edges(1:end-1), spd_esp_hist, '-', ...
+    'Color', esp_color, 'LineWidth', lw_plot)
 hold on
-plot(spd_relax_edges(1:end-1), spd_relax_hist, '-', 'Color', relax_color, 'LineWidth', pdf_lw)
+plot(spd_relax_edges(1:end-1), spd_relax_hist, '-', ...
+    'Color', relax_color, 'LineWidth', lw_plot)
 hold on
-plot(spd_ini_edges_model, spd_ini_hist_model, '--', 'Color', ini_color, 'LineWidth', pdf_lw)
+plot(spd_ini_edges_model, spd_ini_hist_model,  '--', ...
+    'Color', ini_color, 'LineWidth', lw_plot)
 hold on
-plot(spd_esp_edges_model, spd_esp_hist_model, '--', 'Color', esp_color, 'LineWidth', pdf_lw)
+plot(spd_esp_edges_model, spd_esp_hist_model, '--', ...
+    'Color', esp_color, 'LineWidth', lw_plot)
 hold on
-plot(spd_relax_edges_model, spd_relax_hist_model, '--', 'Color', relax_color, 'LineWidth', pdf_lw)
-    
-set(gca, 'LineWidth', lw_axis, 'XLim', [0.03,8], ...
+plot(spd_relax_edges_model, spd_relax_hist_model, '--', ...
+    'Color', relax_color, 'LineWidth', lw_plot)
+hold on
+
+ legend({'Initial', 'Escape', 'Relax'}, 'Location', 'best')
+ legend('Box', 'off')
+
+set(gca, 'LineWidth', lw_axis, 'XLim', [0.03,30], 'XTick', 0:10:30, ...
+    'YLim', [0 0.15], 'YTick', 0:0.04:0.16, ...
+    'XMinorTick', 'on', 'YMinorTick', 'on', 'TickLength', [0.02, 0.001],...
     'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
     'FontSize', font_size, 'FontName', 'Helvetica')
+ax = gca;
+ax.XAxis.MinorTickValues = 0:5:30;  % Minor X-ticks every 0.1
+ax.YAxis.MinorTickValues = 0:.02:10;
 
 xlabel('Speed (cm/s)')
 ylabel('PDF')
 
-legend({'Initial', 'Escape', 'Relax'}, 'Location', 'best')
-legend('Box', 'off')
-
-% exportgraphics(gca, 'speed_dist.pdf', 'ContentType', 'vector')
-
 %% plotting polarisation in ini, esp and relax phase
-
-p_ini_model = readmatrix('pol_ini_hist_model.csv');
-p_ini_edges_model = p_ini_model(:,1);
-p_ini_hist_model = p_ini_model(:,2);
-p_esp_model = readmatrix('pol_esp_hist_model.csv');
-p_esp_edges_model = p_esp_model(:,1);
-p_esp_hist_model = p_esp_model(:,2);
-p_relax_model = readmatrix('pol_relax_hist_model.csv');
-p_relax_edges_model = p_relax_model(:,1);
-p_relax_hist_model = p_relax_model(:,2);
 
 p_edges = 41;
 
@@ -936,94 +1214,94 @@ p_edges = 41;
 [p_esp_hist, p_esp_edges] = histcounts(pol_esp_all, p_edges, 'Normalization', 'pdf');
 [p_relax_hist, p_relax_edges] = histcounts(pol_relax_all, p_edges, 'Normalization', 'pdf');
 
+% model
+
+p_ini_model = readmatrix('pol_ini_hist_mual_0.56_muat_36.8_muesp_20_K_4_k_2_sight_2.36_gamma_1_omegaini_0.7.csv');
+p_ini_edges_model = p_ini_model(:,1);
+p_ini_hist_model = p_ini_model(:,2);
+p_esp_model = readmatrix('pol_esp_hist_mual_0.56_muat_36.8_muesp_20_K_4_k_2_sight_2.36_gamma_1_omegaini_0.7.csv');
+p_esp_edges_model = p_esp_model(:,1);
+p_esp_hist_model = p_esp_model(:,2);
+p_relax_model = readmatrix('pol_relax_hist_mual_0.56_muat_36.8_muesp_20_K_4_k_2_sight_2.36_gamma_1_omegaini_0.7.csv');
+p_relax_edges_model = p_relax_model(:,1);
+p_relax_hist_model = p_relax_model(:,2);
+
 plt_count = plt_count + 1;
 fig = figure(plt_count);
 fig.Position = [300, 1200, 800, 700];
 
-plot(p_ini_edges(1:end-1), p_ini_hist, '-', 'Color', ini_color, 'LineWidth', pdf_lw)
+plot(p_ini_edges(1:end-1), p_ini_hist, '-', 'Color', ini_color, 'LineWidth', lw_plot)
 hold on
-plot(p_esp_edges(1:end-1), p_esp_hist, '-', 'Color', esp_color, 'LineWidth', pdf_lw)
+plot(p_esp_edges(1:end-1), p_esp_hist, '-', 'Color', esp_color, 'LineWidth', lw_plot)
 hold on
-plot(p_relax_edges(1:end-1), p_relax_hist, '-', 'Color', relax_color, 'LineWidth', pdf_lw)
+plot(p_relax_edges(1:end-1), p_relax_hist, '-', 'Color', relax_color, 'LineWidth', lw_plot)
 hold on
-plot(p_ini_edges_model, p_ini_hist_model, '--', 'Color', ini_color, 'LineWidth', pdf_lw)
+plot(p_ini_edges_model, p_ini_hist_model, '--', 'Color', ini_color, 'LineWidth', lw_plot)
 hold on
-plot(p_esp_edges_model, p_esp_hist_model, '--', 'Color', esp_color, 'LineWidth', pdf_lw)
+plot(p_esp_edges_model, p_esp_hist_model, '--', 'Color', esp_color, 'LineWidth', lw_plot)
 hold on
-plot(p_relax_edges_model, p_relax_hist_model, '--', 'Color', relax_color, 'LineWidth', pdf_lw)
+plot(p_relax_edges_model, p_relax_hist_model, '--', 'Color', relax_color, 'LineWidth', lw_plot)
 
-set(gca, 'LineWidth', lw_axis, 'XLim', [0,1], ...
-        'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
-         'FontSize', font_size, 'FontName', 'Helvetica')
+set(gca, 'LineWidth', lw_axis, 'XLim', [0,1], 'XTick', 0:0.2:1, ...
+    'YLim', [0, 4.6], 'YTick', 0:1:4, ...
+    'XMinorTick', 'on', 'YMinorTick', 'on', 'TickLength', [tl_major, tl_minor],...
+    'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
+    'FontSize', font_size, 'FontName', 'Helvetica')
+ax = gca;
+ax.XAxis.MinorTickValues = 0:.1:1;  % Minor X-ticks every 0.1
+ax.YAxis.MinorTickValues = 0:.5:5;
 
 xlabel('Polarisation')
 ylabel('PDF')
 
-legend({'Initial', 'Escape', 'Relax'}, 'Location', 'best')
+legend({'Initial', 'Escape', 'Relax'}, 'Location', 'northwest')
 legend('Box', 'off')
 
-% exportgraphics(gca, 'pol_dist.pdf', 'ContentType', 'vector')
-
 %% plotting distribution of group cohesion
-
-gc_ini_model = readmatrix('gc_ini_hist_model.csv');
-gc_ini_edges_model = gc_ini_model(:,1);
-gc_ini_hist_model = gc_ini_model(:,2);
-gc_esp_model = readmatrix('gc_esp_hist_model.csv');
-gc_esp_edges_model = gc_esp_model(:,1);
-gc_esp_hist_model = gc_esp_model(:,2);
-gc_relax_model = readmatrix('gc_relax_hist_model.csv');
-gc_relax_edges_model = gc_relax_model(:,1);
-gc_relax_hist_model = gc_relax_model(:,2);
 
 [gc_ini_hist, gc_ini_edges] = histcounts(gc_ini_all, 'Normalization', 'pdf');
 [gc_esp_hist, gc_esp_edges] = histcounts(gc_esp_all, 'Normalization', 'pdf');
 [gc_relax_hist, gc_relax_edges] = histcounts(gc_relax_all, 'Normalization', 'pdf');
 
+% model
+
+gc_ini_model = readmatrix('gc_ini_hist_mual_0.56_muat_36.8_muesp_20_K_4_k_2_sight_2.36_gamma_1_omegaini_0.7.csv');
+gc_ini_edges_model = gc_ini_model(:,1);
+gc_ini_hist_model = gc_ini_model(:,2);
+gc_esp_model = readmatrix('gc_esp_hist_mual_0.56_muat_36.8_muesp_20_K_4_k_2_sight_2.36_gamma_1_omegaini_0.7.csv');
+gc_esp_edges_model = gc_esp_model(:,1);
+gc_esp_hist_model = gc_esp_model(:,2);
+gc_relax_model = readmatrix('gc_relax_hist_mual_0.56_muat_36.8_muesp_20_K_4_k_2_sight_2.36_gamma_1_omegaini_0.7.csv');
+gc_relax_edges_model = gc_relax_model(:,1);
+gc_relax_hist_model = gc_relax_model(:,2);
+
 plt_count = plt_count + 1;
 fig = figure(plt_count);
 fig.Position = [300, 1200, 800, 700];
 
-plot(gc_ini_edges(1:end-1), gc_ini_hist, '-', 'Color', ini_color, ...
-    'LineWidth', pdf_lw)
+plot(gc_ini_edges(1:end-1), gc_ini_hist, '-', 'Color', ini_color, 'LineWidth', lw_plot)
 hold on
-plot(gc_esp_edges(1:end-1), gc_esp_hist, '-', 'Color', esp_color, ...
-    'LineWidth', pdf_lw)
+plot(gc_esp_edges(1:end-1), gc_esp_hist, '-', 'Color', esp_color, 'LineWidth', lw_plot)
 hold on
-plot(gc_relax_edges(1:end-1), gc_relax_hist, '-', 'Color', relax_color, ...
-    'LineWidth', pdf_lw)
+plot(gc_relax_edges(1:end-1), gc_relax_hist, '-', 'Color', relax_color, 'LineWidth', lw_plot)
 hold on
-plot(gc_ini_edges_model, gc_ini_hist_model, '--', 'Color', ini_color, ...
-    'LineWidth', pdf_lw)
+plot(gc_ini_edges_model, gc_ini_hist_model, '--', 'Color', ini_color, 'LineWidth', lw_plot)
 hold on
-plot(gc_esp_edges_model, gc_esp_hist_model, '--', 'Color', esp_color, ...
-    'LineWidth', pdf_lw)
+plot(gc_esp_edges_model, gc_esp_hist_model, '--', 'Color', esp_color, 'LineWidth', lw_plot)
 hold on
-plot(gc_relax_edges_model, gc_relax_hist_model, '--', 'Color', relax_color, ...
-    'LineWidth', pdf_lw)
-    
-set(gca, 'LineWidth', 2, 'XLim', [0,12], ...
-    'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
-    'FontSize', font_size, 'FontName', 'Helvetica')
-
-xlabel('Dispersion (cm)')
-ylabel('PDF')
+plot(gc_relax_edges_model, gc_relax_hist_model, '--', 'Color', relax_color, 'LineWidth', lw_plot)
 
 legend({'Initial', 'Escape', 'Relax'}, 'Location', 'best')
 legend('Box', 'off')
 
-% exportgraphics(gca, 'disp_dist.pdf', 'ContentType', 'vector')
+set(gca, 'LineWidth', lw_axis, 'XLim', [0,12], 'XTick', 0:2:12, ...
+    'YLim', [0,.9], 'YTick', 0:0.2:1, ...
+    'XMinorTick', 'on', 'YMinorTick', 'on', 'TickLength', [tl_major, tl_minor],...
+    'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
+    'FontSize', font_size, 'FontName', 'Helvetica')
+ax = gca;
+ax.XAxis.MinorTickValues = 0:1:12;  % Minor X-ticks every 0.1
+ax.YAxis.MinorTickValues = 0:.1:1;
 
-%% storing time since last fish crossed data as .csv
-
-% video = 1:no_exp;
-% naive_agents = (1:n)';
-% naive_agents = repmat(naive_agents, no_exp, 1);
-% video = repmat(video, n, 1);
-% video = video(:);
-% % naive_fish_id = tmind_all(:,1) ~= 1;
-% % time_last_fish_crossed_min = tmind_all(naive_fish_id,2);
-% time_last_fish_crossed_min = tmind_all(:,2);
-% 
-% time_since_last_fish_crossed_data = [video, naive_agents, time_last_fish_crossed_min];
-% writematrix(time_since_last_fish_crossed_data, 'time_since_last_fish_crossed_data.csv')
+xlabel('Dispersion (cm)')
+ylabel('PDF')

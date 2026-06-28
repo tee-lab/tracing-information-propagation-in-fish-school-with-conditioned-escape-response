@@ -7,45 +7,45 @@ clc
 % all measurements are in cm and seconds
 
 % tic
-
+scaled_para = 4;
 n = 5; % no.of individuals
-dt = 0.04; % integration time
-T = 250; % total simulation time
+dt = 0.01; % integration time
+T = 50; % total simulation time
 n_iter = round(T/dt);  
 zor = 5; % zone of repulsion
 l_wall = 3; % distance below which repulsive force of wall is active
-s_be = 1.2; % speed before detecting threat
+s_be = 4.8; % speed before detecting threat
 
-mu_d = 2.3; % repulsion and attraction strength
+mu_d = 2.3*scaled_para^2; % repulsion and attraction strength
 md = 2.5; % 
-mu_alg = 0.1; % alignment strength
-mu_wall = 30; % strength of repulstion from wall
-mu_esp = 1.25; % strength of escape
+mu_alg = .14*scaled_para; % alignment strength
+mu_wall = 30*scaled_para^2; % strength of repulstion from wall
+mu_esp = 1.25*scaled_para^2; % strength of escape
 
 box_len = 50; % length of box in cm
 box_width = 20; % width of box in cm
 mini_box_len = 20; % length of smaller box
 
-beta = 0.3; % speed relaxation coefficient
-D_phi = 0.3; % diffusion coefficient (angular noise)
-D_s = 0.3; % diffusion coefficient (velocity noise)
-alpha = 1; % turning friction
+beta = 0.3*scaled_para; % speed relaxation coefficient
+D_phi = 0.3*scaled_para^3; % diffusion coefficient (angular noise)
+D_s = 0.3*scaled_para^3; % diffusion coefficient (velocity noise)
+alpha = 1*scaled_para; % turning friction
 sight = 3*pi/4; % visible range (sight as defined in Couzin et al, 2002)
 
 K = 4; % no.of individuals they can perceive
 k_alg = 2; % no of individuals to align to
 k_atr = 2; % no of individuals to attract to
 no_inf_neighbours = 1; % no.of neighbours that know that they have to escape
-gamma = 0.25; % rate at which escape direction info is lost.
+gamma = 0.25*scaled_para; % rate at which escape direction info is lost.
 omega_ini = 0.7; % initial social interaction (1 - omega)
 
 % attack time for the trained individual.
-t_atk = round(n_iter/2);
+t_atk = 2500;
 
-no_it = 36; % no.of iteration (same as no.of trails)
-no_exp = 5; % no.of sets of trails
+no_it = 55; % no.of iteration (same as no.of trails)
+no_exp = 100; % no.of sets of trails
 
-stb_time = 500;
+stb_time = 1500;
 
 theta_f = nan(n,n_iter-stb_time,no_it,no_exp); % store theta
 pos_f = nan(n,2,n_iter-stb_time,no_it,no_exp); % store pos
@@ -104,7 +104,7 @@ sdata = struct('pos_t', pos_f, 'theta_t', theta_f, 's_t', s_f, 'en_start', en_st
 %     '_omega_ini_', num2str(omega_ini), '.mat');
 % save(fname, '-struct', 'sdata')
 
-save('sim.mat', '-struct', 'sdata')
+save('sim_test_omega_05.mat', '-struct', 'sdata')
 
 disp("Simulation Complete")
 % toc

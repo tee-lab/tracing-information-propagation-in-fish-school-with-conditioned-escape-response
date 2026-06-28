@@ -4,7 +4,7 @@ clc
 
 %% load files
 
-fname = "sim";
+fname = "sim_test_01";
 method = "_pm_"; % stat or pm
 phase = 2; % 1, 2, 3
 fnet_name = strcat('full_net', method, 'phase_', num2str(phase), '_', fname, '.csv');
@@ -96,21 +96,21 @@ end
 
 %%
 
-plt_count = plt_count + 1;
-fig = figure(plt_count);
-fig.Position = [300, 1200, 800, 700];
-omega_ini = 0.7:0.1:1;
-int_strength = [.67, 0.23, 0.21, 0.07];
-
-plot(omega_ini, int_strength, 'o-', 'Color', '#A52A2A', 'LineWidth', 4, ...
-        'MarkerFaceColor', '#A52A2A')
-
-set(gca, 'XLim', [0.69 1.01], 'YLim', [0, 1], 'YTick', 0:0.2:1, ...
-    'LineWidth', 2, 'Xcolor', 'k', 'YColor', 'k', ...
-    'FontSize', 25, 'FontName', 'Helvetica')
-
-xlabel('\omega(0)', 'FontSize', 25)
-ylabel('Leadership consistency (1 -> 2)', 'FontSize', 25)
+% plt_count = plt_count + 1;
+% fig = figure(plt_count);
+% fig.Position = [300, 1200, 800, 700];
+% omega_ini = 0.7:0.1:1;
+% int_strength = [.67, 0.23, 0.21, 0.07];
+% 
+% plot(omega_ini, int_strength, 'o-', 'Color', '#A52A2A', 'LineWidth', 4, ...
+%         'MarkerFaceColor', '#A52A2A')
+% 
+% set(gca, 'XLim', [0.69 1.01], 'YLim', [0, 1], 'YTick', 0:0.2:1, ...
+%     'LineWidth', 2, 'Xcolor', 'k', 'YColor', 'k', ...
+%     'FontSize', 25, 'FontName', 'Helvetica')
+% 
+% xlabel('\omega(0)', 'FontSize', 25)
+% ylabel('Leadership consistency (1 -> 2)', 'FontSize', 25)
 
 % exportgraphics(gca, 'leadership_consistency.pdf', 'ContentType', 'vector')
 

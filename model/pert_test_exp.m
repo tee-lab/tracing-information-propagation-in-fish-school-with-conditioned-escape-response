@@ -9,7 +9,7 @@ tic
 %% constant parameter values
 
 max_lag = 75; % max lag to calculate correlation
-min_lag = 5; % min lag for cc to be considered meaningful
+min_lag = 10; % min lag for cc to be considered meaningful
 p_val = 0.05; % p value cutoff
 add_enc_time_before = 0;
 add_enc_time_after = 0;
@@ -37,7 +37,7 @@ fname = fname(1:end-4);
 
 %% calculate interaction network
 
-no_it = 36;
+% no_it = 53;
 
 t_atk = min(t_atk); % attack time
 

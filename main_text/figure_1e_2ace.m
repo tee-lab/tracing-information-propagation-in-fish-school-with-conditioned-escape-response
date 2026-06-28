@@ -14,7 +14,7 @@ tot_time = tot_time(end,1) + 1; % because time starts from t = 0.
 
 file_name = file_name(1:end-5);
 
-dt = 0.04; % del t between 2 frames. 
+dt = 0.01; % del t between 2 frames. 
 n = 5; % no.of fish
 col_posx = 2; % column with x coordinates
 col_posy = 3; % column with y coordinates
@@ -40,12 +40,14 @@ speed_plt_color = ["#6929c4", "#1192e8", "#005d5d", "#9f1853", "#d2a106"];
 two_d_color = "#A52A2A";
 ini_color = "#0096FF";
 relax_color = "#097969";
-font_size = 25;
+font_size = 30;
 lw_plot = 2;
 lw_axis = 2;
 lw_xline = 4;
 x_min_lim = -0.5;
 x_max_lim = 3;
+tl_major = 0.02;
+tl_minor = 0.0005;
 
 %% collecting positions of all fish from tracked data files
 
@@ -236,13 +238,17 @@ hold off
 % legend('boxoff')
 
 set(gca, 'XLim', [x_min_lim x_max_lim], 'YLim', [0, 1], 'YTick', 0:.2:1, ...
+    'XMinorTick', 'on', 'YMinorTick', 'on', 'TickLength', [tl_major, tl_minor],...
     'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
     'FontSize', font_size, 'FontName', 'Helvetica')
+ax = gca;
+ax.XAxis.MinorTickValues = -1:0.5:x_max_lim;  % Minor X-ticks every 0.1
+ax.YAxis.MinorTickValues = 0:.1:1; 
 
 xlabel('')
 ylabel('Polarisation')
 
-% exportgraphics(gca, 'pol_ts_samp_data.pdf', 'ContentType', 'vector')
+exportgraphics(gca, 'pol_ts_samp_data.pdf', 'ContentType', 'vector')
 
 gc_x = mean(pos_fish(:,1,:), 1, 'omitmissing'); % group centre - x 
 gc_y = mean(pos_fish(:,2,:), 1, 'omitmissing'); % group centre - y
@@ -269,6 +275,18 @@ pos_gc_y = abs(pos_gc_y);
 mean_gc_y = mean(pos_gc_y, 1);
 mean_gc_y = smoothdata(mean_gc_y, 'gaussian', smooth_window);
 
+% dispersion without conditioned fish
+pos_fish_wo_con = pos_fish(rank_id,:,:);
+pos_fish_wo_con = pos_fish_wo_con(2:end,:,:);
+
+pf_wc_gc_x = mean(pos_fish_wo_con(:,1,:), 1);
+pf_wc_gc_y = mean(pos_fish_wo_con(:,2,:), 1);
+pf_gc_wc(:,1,:) = pos_fish_wo_con(:,1,:) - pf_wc_gc_x;
+pf_gc_wc(:,2,:) = pos_fish_wo_con(:,2,:) - pf_wc_gc_y;
+dist_pf_gc_wc = vecnorm(pf_gc_wc,2,2);
+mean_dist_pf_gc_wc = squeeze(mean(dist_pf_gc_wc,1));
+mean_dist_pf_gc_wc = smoothdata(mean_dist_pf_gc_wc, 'gaussian', smooth_window);
+
 plt_count = plt_count + 1;
 fig = figure(plt_count);
 fig.Position = [300, 1200, 800, 700];
@@ -279,21 +297,27 @@ plot(t_plt, mean_gc_x(t_st:t_skip:t_end), 'LineWidth', lw_xline, 'Color', ini_co
 hold on
 plot(t_plt, mean_gc_y(t_st:t_skip:t_end), 'LineWidth', lw_xline, 'Color', relax_color)
 hold on
+plot(t_plt, mean_dist_pf_gc_wc(t_st:t_skip:t_end), 'LineWidth', lw_xline, 'Color', 'k')
+hold on
 xline(0, '--r', 'LineWidth', lw_xline)
 hold on
 xline(1, '--r', 'LineWidth', lw_xline)
 hold off
 
 set(gca, 'XLim', [x_min_lim x_max_lim], ...
+    'XMinorTick', 'on', 'YMinorTick', 'on', 'TickLength', [0.02, 0.001],...
     'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
     'FontSize', font_size, 'FontName', 'Helvetica')
+ax = gca;
+ax.XAxis.MinorTickValues = -1:0.5:x_max_lim;  % Minor X-ticks every 0.1
+ax.YAxis.MinorTickValues = 0:1:10; 
 
 xlabel('')
 ylabel('Dispersion (cm)')
 % legend({'D', 'D_x', 'D_y'}, 'Location', 'best')
 % legend('boxoff')
 
-% exportgraphics(gca, 'disp_ts_sample_data.pdf', 'ContentType', 'vector')
+exportgraphics(gca, 'disp_ts_sample_data.pdf', 'ContentType', 'vector')
 
 %% speed time series
 
@@ -301,7 +325,7 @@ speed_rank = speed_fish(rank_id,:);
 
 plt_count = plt_count + 1;
 fig = figure(plt_count);
-fig.Position = [300, 1200, 800, 700];
+fig.Position = [300, 1200, 550, 1400];
 t = tiledlayout(5, 1, 'TileSpacing', 'tight', 'Padding', 'compact');
 
 for i = 1:n
@@ -318,12 +342,17 @@ for i = 1:n
     xline(1, '--r', 'LineWidth', lw_xline)
     hold off
 
-    % legend({strcat("CR - ", num2str(i))}, 'Location', 'best', 'FontSize', 20)
-    % legend('Box', 'off')
+    legend({strcat("CR-", num2str(i))}, 'Location', 'best', 'FontSize', 20)
+    legend('Box', 'off')
 
-    set(gca, 'XLim', [x_min_lim x_max_lim], 'YLim', [0, 8], 'YTick', 0:4:8, ...
+    set(gca, 'XLim', [x_min_lim x_max_lim], 'YLim', [0,22],...
+    'XTick', -1:1:3, 'YTick', 0:10:30,...
+    'XMinorTick', 'on', 'YMinorTick', 'on', 'TickLength', [tl_major, tl_minor],...
     'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
-    'FontSize', 15, 'FontName', 'Helvetica')
+    'FontSize', 20, 'FontName', 'Helvetica')
+    ax = gca;
+    ax.XAxis.MinorTickValues = -1:0.5:x_max_lim;  % Minor X-ticks every 0.1
+    ax.YAxis.MinorTickValues = 0:5:30;
 
     if i < n
         % Remove x-tick labels for all but the bottom plot
@@ -340,10 +369,10 @@ for i = 1:n
 
 end
 
-xlabel(t, '', 'FontSize', font_size, 'FontName', 'Helvetica')
-ylabel(t, 'Speed (cm/s)', 'FontSize', font_size, 'FontName', 'Helvetica')
+xlabel(t, 'Normalised time', 'FontSize', 25, 'FontName', 'Helvetica')
+ylabel(t, 'Speed (cm/s)', 'FontSize', 25, 'FontName', 'Helvetica')
 
-% exportgraphics(fig, 'speed_ts_sample_data.pdf', 'ContentType', 'vector')
+exportgraphics(fig, 'speed_ts_sample_data.pdf', 'ContentType', 'vector')
 
 %% x time series
 
@@ -353,12 +382,15 @@ plt_count = plt_count + 1;
 fig = figure(plt_count);
 fig.Position = [300, 1200, 800, 700];
 
+speed_plt_color = ["#6929c4", "#1192e8", "#005d5d", "#9f1853", "#d2a106"];
+
 for i = 1:n
     
     pos_plt_temp = squeeze(pos_rank(i,1,:));
     pos_plt_temp = smoothdata(pos_plt_temp, "gaussian", 10);
     
-    plot(t_plt, pos_plt_temp(t_st:t_skip:t_end), 'LineWidth', lw_plot)
+    plot(t_plt, pos_plt_temp(t_st:t_skip:t_end), 'LineWidth', lw_plot, 'Color', ...
+        speed_plt_color(i))
     hold on
 
 end
@@ -372,15 +404,20 @@ hold on
 xline(1, '--r', 'LineWidth', lw_xline)
 hold off
 
-% legend({'CR-1', 'CR-2', 'CR-3', 'CR-4', 'CR-5'}, 'Location', 'best')
-% legend('Box', 'off')
+legend({'CR-1', 'CR-2', 'CR-3', 'CR-4', 'CR-5'}, 'Location', 'southeast')
+legend('Box', 'off')
 
 set(gca, 'XLim', [x_min_lim x_max_lim], 'XTick', -1:1:x_max_lim, ...
+    'XMinorTick', 'on', ...
     'YLim', [0, 50], 'YTick', 0:10:50, ...
+    'YMinorTick', 'on', 'TickLength', [0.02, 0.0005], ...
     'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
-    'FontSize', font_size, 'FontName', 'Helvetica')
+    'FontSize', font_size, 'FontName', 'Helvetica', 'Box', 'on')
+ax = gca;
+ax.XAxis.MinorTickValues = -1:0.5:x_max_lim;  % Minor X-ticks every 0.1
+ax.YAxis.MinorTickValues = 0:5:50; 
 
-xlabel('t_n')
+xlabel('Normalised time')
 ylabel('x (cm)')
 
-% exportgraphics(fig, 'pos_x_ts_sample_data.pdf', 'ContentType', 'vector')
+exportgraphics(fig, 'pos_x_ts_sample_data.pdf', 'ContentType', 'vector')

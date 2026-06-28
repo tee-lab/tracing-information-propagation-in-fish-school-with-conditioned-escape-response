@@ -8,10 +8,10 @@ clc
 
 % tic
 
-% fname = dir('*.mat');
-% fname = fname.name;
-fname = 'vs_nm';
-load(fname) % load data
+fname = dir('*.mat');
+fname = fname.name;
+% fname = 'vs_nm';
+% load(fname) % load data
 fname = fname(1:end-4);
 
 max_lag = 75; % max lag to calculate correlation
@@ -30,7 +30,7 @@ t_atk = min(t_atk);
 
 %% permute test
 
-for cal_corr_event = 1:no_cal_corr_event
+for cal_corr_event = 2:2%no_cal_corr_event
 
     avg_combi_net = []; % leader; follower; avg_edges; avg_cc
 

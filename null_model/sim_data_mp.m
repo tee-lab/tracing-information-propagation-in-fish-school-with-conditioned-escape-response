@@ -7,35 +7,37 @@ clc
 % all measurements are in cm and seconds
 
 % tic
-
+scaled_para = 4; % after I changed the model for dt = 0.01
 n = 5; % no.of individuals
-dt = 0.04; % integration time
-T = 250; % total simulation time
+dt = 0.01; % integration time
+T = 50; % total simulation time
 n_iter = round(T/dt);  
 zor = 5; % zone of repulsion
 l_wall = 3;
-s_be = 1.2; % speed before detecting threat
+s_be = 1.2*scaled_para; % speed before detecting threat
 
-g_wall = 30;
-g_esp = 1.25;
+g_wall = 30*scaled_para^2;
+g_esp = 1.25*scaled_para^2;
 
 box_len = 50;
 box_width = 20;
 mini_box_len = 20;
 
-beta = 0.3;
-D_phi = 0.3; % angular noise
-D_s = 0.3; % velocity noise
-alpha = 1; % turning friction
-mu_d = 2.3; 
+beta = 0.3*scaled_para; % speed relaxation coefficient
+D_phi = 0.3*scaled_para^3; % diffusion coefficient (angular noise)
+D_s = 0.3*scaled_para^3; % diffusion coefficient (velocity noise)
+alpha = 1*scaled_para; % turning friction
+sight = 3*pi/4; % visible range (sight as defined in Couzin et al, 2002)
+
+mu_d = 2.3*scaled_para^2; % repulsion and attraction strength
 m_d = 2.5; 
 
-gamma = 0.25; % rate at which escape direction info is lost.
+gamma = 0.25*scaled_para; % rate at which escape direction info is lost.
 
-no_it = 39; % no.of iteration (same as no.of trails)
-no_exp = 5; % no.of sets of trails
+no_it = 53; % no.of iteration (same as no.of trails)
+no_exp = 10; % no.of sets of trails
 
-stb_time = 500;
+stb_time = 1500;
 
 theta_f = nan(n,n_iter-stb_time,no_it,no_exp); % store theta
 pos_f = nan(n,2,n_iter-stb_time,no_it,no_exp); % store pos
@@ -48,8 +50,6 @@ rank_order_deter_f = nan(n,no_it,no_exp);
 
 % attack time for all individual.
 t_atk = ones(n,1)*round(n_iter/2);
-% t_atk = round(n_iter/2);
-% t_atk = t_atk + atk_diff*(0:(n-1));
 [~, rank_ord_deterministic] = sort(t_atk);
 
 for e = 1:no_exp

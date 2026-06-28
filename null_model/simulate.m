@@ -5,7 +5,11 @@ clc
 %
 tic
 
-load('vs_nm.mat')
+fname = dir('*.mat'); % file name here
+fname = fname.name;
+load(fname) % load data
+
+%rank_order_atk
 
 min(min(min(pos_t(:,1,:,:))))
 max(max(max(pos_t(:,1,:,:))))
@@ -14,27 +18,31 @@ min(min(min(pos_t(:,2,:,:))))
 
 % plotting speed trajectories
 
-iter = round(no_it*rand()); 
+iter = ceil(no_it*rand());
 exp = 1;
 disp(iter)
+en_end_escape = max(en_end(:,iter));
 
-figure(1)
+plt_count = 0;
+plt_count = plt_count + 1;
+fig = figure(plt_count);
+fig.Position = [50, 100, 1400, 700];
 
-pos_t = pos_t(:,:,:,iter);
-theta_t = theta_t(:,:,iter);
-s_t = s_t(:,:,iter);
-% rank_order = rank_order_deter(:,iter);
-rank_order = rank_order_atk(:,iter);
+pos_t = pos_t(:,:,:,iter,exp);
+theta_t = theta_t(:,:,iter,exp);
+s_t = s_t(:,:,iter,exp);
 
 for i = 1:n
-    
+
     subplot(3,2,i)
     plot(1:n_iter, s_t(i,:))
     hold on
 
 end
 
-figure(2)
+plt_count = plt_count + 1;
+fig = figure(plt_count);
+fig.Position = [50, 100, 1400, 700];
 
 for i = 1:n
 
@@ -59,19 +67,22 @@ end
 
 %%
 
-figure(3)
+plt_count = plt_count + 1;
+fig = figure(plt_count);
+fig.Position = [50, 100, 1400, 700];
 
-mo = VideoWriter('null_model_icts', 'MPEG-4');
-mo.FrameRate = 10;
-mo.Quality = 100;
-open(mo);
+% mo = VideoWriter('sm_video_3', 'MPEG-4');
+% mo.FrameRate = 10;
+% mo.Quality = 100;
+% open(mo);
 
-t_st = 2400;
-t_et = 3300;
+t_atk = min(t_atk);
+t_st = 1;
+t_et = size(pos_t,3);
 
-agent_col = ["red", "cyan", "#A2142F", "#0072BD",  "#7E2F8E", "k", "magenta"]; % red, blue, brown, dark blue, purple.
+agent_col = {'red', 'green', 'black', 'magenta', 'purple'};
 
-for t = t_st:3:t_et
+for t = 800:2:2200 %(t_et)
 
     pos_x = pos_t(:,1,t);
     pos_y = pos_t(:,2,t);
@@ -83,38 +94,72 @@ for t = t_st:3:t_et
 
     hold on
 
-    for i = 1:n
-        
-        % col_id = find(rank_order == i);
-        plot(pos_x(i), pos_y(i), '.', 'Color', 'k', 'MarkerSize', 25);
-        hold on
+    plot(pos_x(1), pos_y(1), '.', 'Color', 'red', 'MarkerSize', 25);
+    hold on 
+    plot(pos_x(2), pos_y(2), '.', 'Color', 'k', 'MarkerSize', 25);
+    hold on
+    plot(pos_x(3:n), pos_y(3:n), '.', 'Color', 'k', 'MarkerSize', 25);
 
-    end
+    hold on
 
-    xline(0, 'Color', 'k')
+    xline(0, 'Color', 'k', 'LineWidth', 3)
     hold on
-    xline(box_len, 'Color', 'k')
+    xline(box_len, 'Color', 'k', 'LineWidth', 3)
     hold on
-    xline(mini_box_len, 'Color', 'r')
+    xline(mini_box_len, 'Color', 'r', 'LineWidth', 3)
     hold on
-    xline(box_len - mini_box_len, 'Color', 'r')
+    xline(box_len - mini_box_len, 'Color', 'r', 'LineWidth', 3)
     hold on
-    yline(0, 'Color', 'k')
+    yline(0, 'Color', 'k', 'LineWidth', 3)
     hold on
-    yline(box_width, 'Color', 'k')
+    yline(box_width, 'Color', 'k', 'LineWidth', 3)
+    hold on
+    text(box_width, box_width/2, 'Hurdle start', ...
+     'Rotation', 90, 'HorizontalAlignment', 'center', ...
+     'VerticalAlignment', 'top', 'FontSize', 20, 'FontName', 'Helvetica')
+    hold on
+    text(box_len - box_width, box_width/2, 'Hurdle end', ...
+     'Rotation', 90, 'HorizontalAlignment', 'center', ...
+     'VerticalAlignment', 'bottom', 'FontSize', 20, 'FontName', 'Helvetica')
+    hold on
+    rectangle('Position', [box_width 0 10 box_width],...
+    'FaceColor', "#BCBCBC", 'EdgeColor', 'none', ...
+            'FaceAlpha', 0.3)
+
+    % plot(pert_pos(1,1,t), pert_pos(1,2,t), '.', 'Color', 'r', 'MarkerSize', 30);
+    % 
+    % hold on
+    % 
+    % viscircles(pert_pos(1,:,t), atk_dist, 'Color', 'r');
+
     hold off
 
-    tim_disp = strcat('T =  ', num2str(t));
-    title(tim_disp)
+    if t>=t_atk && t < t_atk+300
+        rectangle('Position', [0 0 20 20], 'FaceColor', "#dcffdb", 'EdgeColor', 'none', ...
+            'FaceAlpha', 0.3)
+    end
     
-    axis([0, box_len, 0, box_width+5])
-    axis('equal')
+    if t < t_atk 
+        title("Initial phase", 'FontSize', 30)
+    elseif t >= t_atk && t <= en_end_escape
+        title("Escape phase", 'FontSize', 30)
+    else
+        title("Relax", 'FontSize', 30)
+    end
+
+    set(gca, 'XLim', [0 box_len], 'YLim', [0, box_width], ...
+    'LineWidth', 2, 'Xcolor', 'k', 'YColor', 'k', ...
+    'FontSize', 30, 'FontName', 'Helvetica', 'Box', 'on')
+    
+    xlabel('X (cm)')
+    ylabel('Y (cm)')
+    % axis('equal')
     drawnow('limitrate')
 
-    image = getframe(figure(1));
-    writeVideo(mo, image);
+    % image = getframe(figure(plt_count));
+    % writeVideo(mo, image);
 
 end
 
-close(mo)
+% close(mo)
 toc

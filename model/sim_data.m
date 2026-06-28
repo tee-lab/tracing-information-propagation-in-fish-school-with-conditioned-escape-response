@@ -42,8 +42,8 @@ omega_ini = 0.7; % initial social interaction (1 - omega)
 % attack time for the trained individual.
 t_atk = 2500;
 
-no_it = 55; % no.of iteration (same as no.of trails)
-no_exp = 100; % no.of sets of trails
+no_it = 53; % no.of iteration (same as no.of trails)
+no_exp = 10; % no.of sets of trails
 
 stb_time = 1500;
 
@@ -99,12 +99,7 @@ sdata = struct('pos_t', pos_f, 'theta_t', theta_f, 's_t', s_f, 'en_start', en_st
     'omega_ini', omega_ini, 'no_it', no_it, 'no_exp', no_exp, 't_atk', t_atk, ...
     'sight', sight);
 
-% fname = strcat('mual_', num2str(mu_alg), '_muat_', num2str(mu_d), ...
-%     '_muesp_', num2str(mu_esp), '_K_', num2str(K), '_k_', num2str(k_alg), ...
-%     '_omega_ini_', num2str(omega_ini), '.mat');
-% save(fname, '-struct', 'sdata')
-
-save('sim_test_omega_05.mat', '-struct', 'sdata')
+save('sim.mat', '-struct', 'sdata')
 
 disp("Simulation Complete")
 % toc

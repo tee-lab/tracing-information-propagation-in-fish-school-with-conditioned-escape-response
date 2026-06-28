@@ -9,7 +9,7 @@ clc
 % fname = fname(1:end-4);
 fname = "vs_nm";
 
-method = "_pm_"; % stat or pm
+method = "_stat_"; % stat or pm
 phase = 2; % 1, 2, 3
 fnet_name = strcat('full_net', method, 'phase_', num2str(phase), '_', fname, '.csv');
 dnet_name = strcat('diff_net', method, 'phase_', num2str(phase), '_', fname, '.csv');
@@ -33,22 +33,22 @@ relax_color = "#097969";
 
 %% Check if the time series are stationary
 
-if method == "_stat_"
-
-    is_stat_fname = strcat('is_stat_phase', num2str(1), '_', fname, '.csv');
-    is_stat = readmatrix(is_stat_fname);
-
-    plt_count = plt_count + 1;
-    fig = figure(plt_count);
-    fig.Position = [300, 300, 1000, 1000];
-
-    histogram(is_stat, 'Normalization', 'pdf')
-    h = gca;
-    h.XTick = [0, 1];
-    h.XTickLabel = {'Non-Stat', 'Stat'};
-    ylabel('PDF')
-
-end
+% if method == "_stat_"
+% 
+%     is_stat_fname = strcat('is_stat_phase', num2str(1), '_', fname, '.csv');
+%     is_stat = readmatrix(is_stat_fname);
+% 
+%     plt_count = plt_count + 1;
+%     fig = figure(plt_count);
+%     fig.Position = [300, 300, 1000, 1000];
+% 
+%     histogram(is_stat, 'Normalization', 'pdf')
+%     h = gca;
+%     h.XTick = [0, 1];
+%     h.XTickLabel = {'Non-Stat', 'Stat'};
+%     ylabel('PDF')
+% 
+% end
 
 %% constructing full network
 

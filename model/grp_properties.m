@@ -16,12 +16,12 @@ esp_color = "#fa4d56";
 relax_color = "#198038";
 speed_plt_color = ["#6929c4", "#1192e8", "#005d5d", "#9f1853", "#d2a106"];
 
-font_size = 25;
+font_size = 30;
 lw_axis = 2;
 lw_plot = 2;
 lw_xline = 3;
 mr_size = 10;
-label_fs = 25;
+label_fs = 30;
 
 spd_ini_emp = readmatrix('/Users/vivek/Library/CloudStorage/OneDrive-IndianInstituteofScience/IISc/phd/phd_thesis/1c_4n_project/bee_dance_tracks/new_tracks_19_6_25/spd_ini_emp.csv');
 spd_esp_emp = readmatrix('/Users/vivek/Library/CloudStorage/OneDrive-IndianInstituteofScience/IISc/phd/phd_thesis/1c_4n_project/bee_dance_tracks/new_tracks_19_6_25/spd_esp_emp.csv');
@@ -110,7 +110,7 @@ t_ini = find(t_plt < 0);
 t_esp = t_plt > 0 & t_plt < 1;
 t_relax = find(t_plt > 1);
 
-% Grp polarisation
+%% Grp polarisation
 
 grp_pol = nan(n_iter, no_it);
 
@@ -173,36 +173,22 @@ set(gca, 'XLim', [-0.5 3], 'YLim', [0,1], 'YTick', 0:0.2:1, ...
     'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
     'FontSize', font_size, 'FontName', 'Helvetica')
 
-xlabel('t_n', 'FontSize', label_fs)
+xlabel('Normalised time', 'FontSize', label_fs)
 ylabel('Polarisation', 'FontSize', label_fs)
 
-% pol in ini, esp, relax
-
-[p_ini_hist_emp, p_ini_edges_emp] = histcounts(pol_ini_emp, p_edges, 'Normalization', 'pdf');
-[p_esp_hist_emp, p_esp_edges_emp] = histcounts(pol_esp_emp, p_edges, 'Normalization', 'pdf');
-[p_relax_hist_emp, p_relax_edges_emp] = histcounts(pol_relax_emp, p_edges, 'Normalization', 'pdf');
-    
+%% pol in ini, esp, relax
 
 plt_count = plt_count + 1;
 fig = figure(plt_count);
 fig.Position = [300, 1200, 800, 700];
 
-plot(p_ini_edges(1:end-1), p_ini_hist, '--', 'Color', ini_color, 'LineWidth', lw_xline)
+plot(p_ini_edges(1:end-1), p_ini_hist, '-', 'Color', ini_color, 'LineWidth', lw_xline)
 hold on
-plot(p_esp_edges(1:end-1), p_esp_hist, '--', 'Color', esp_color, 'LineWidth', lw_xline)
+plot(p_esp_edges(1:end-1), p_esp_hist, '-', 'Color', esp_color, 'LineWidth', lw_xline)
 hold on
-plot(p_relax_edges(1:end-1), p_relax_hist, '--', 'Color', relax_color, 'LineWidth', lw_xline)
-hold on
-plot(p_ini_edges_emp(1:end-1), p_ini_hist_emp, '-', ...
-    'Color', ini_color, 'LineWidth', lw_xline)
-hold on
-plot(p_esp_edges_emp(1:end-1), p_esp_hist_emp, '-', ...
-    'Color', esp_color, 'LineWidth', lw_xline)
-hold on
-plot(p_relax_edges_emp(1:end-1), p_relax_hist_emp, '-', ...
-    'Color', relax_color, 'LineWidth', lw_xline)
+plot(p_relax_edges(1:end-1), p_relax_hist, '-', 'Color', relax_color, 'LineWidth', lw_xline)
 
-set(gca, 'LineWidth', lw_axis, 'XLim', [0,1], ...
+set(gca, 'LineWidth', lw_axis, 'XLim', [0,1], 'XTick', 0:.2:1,...
     'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
     'FontSize', font_size, 'FontName', 'Helvetica')
 
@@ -212,7 +198,7 @@ legend('Box', 'off')
 xlabel('Polarisation')
 ylabel('PDF')
 
-% Group speed dynamics
+%% Group speed dynamics
 
 median_grp_spd = nan(n_iter, no_it);
 speed_rank = nan(size(s_t));
@@ -281,10 +267,10 @@ set(gca, 'XLim', [-0.5 3], 'YLim', [0,20], ...
     'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
     'FontSize', font_size, 'FontName', 'Helvetica')
 
-xlabel('t_n', 'FontSize', label_fs)
+xlabel('Normalised time', 'FontSize', label_fs)
 ylabel('Speed (cm/s)', 'FontSize', label_fs)
 
-% storing pdfs of speed in ini, esp, and relax phase
+%% storing pdfs of speed in ini, esp, and relax phase
 
 speed_ini_all = speed_rank(t_ini,:);
 speed_ini_all = speed_ini_all(:);
@@ -309,24 +295,11 @@ plt_count = plt_count + 1;
 fig = figure(plt_count);
 fig.Position = [300, 1200, 800, 700];
 
-[spd_ini_hist_emp, spd_ini_edges_emp] = histcounts(spd_ini_emp, 'Normalization', 'pdf');
-[spd_esp_hist_emp, spd_esp_edges_emp] = histcounts(spd_esp_emp, 'Normalization', 'pdf');
-[spd_relax_hist_emp, spd_relax_edges_emp] = histcounts(spd_relax_emp, 'Normalization', 'pdf');
-
-plot(spd_ini_edges(1:end-1), spd_ini_hist, '--', 'Color', ini_color, 'LineWidth', lw_xline)
+plot(spd_ini_edges(1:end-1), spd_ini_hist, '-', 'Color', ini_color, 'LineWidth', lw_xline)
 hold on
-plot(spd_esp_edges(1:end-1), spd_esp_hist, '--', 'Color', esp_color, 'LineWidth', lw_xline)
+plot(spd_esp_edges(1:end-1), spd_esp_hist, '-', 'Color', esp_color, 'LineWidth', lw_xline)
 hold on
-plot(spd_relax_edges(1:end-1), spd_relax_hist, '--', 'Color', relax_color, 'LineWidth', lw_xline)
-hold on
-plot(spd_ini_edges_emp(1:end-1), spd_ini_hist_emp,  '-', ...
-    'Color', ini_color, 'LineWidth', lw_xline)
-hold on
-plot(spd_esp_edges_emp(1:end-1), spd_esp_hist_emp, '-', ...
-    'Color', esp_color, 'LineWidth', lw_xline)
-hold on
-plot(spd_relax_edges_emp(1:end-1), spd_relax_hist_emp, '-', ...
-    'Color', relax_color, 'LineWidth', lw_xline)
+plot(spd_relax_edges(1:end-1), spd_relax_hist, '-', 'Color', relax_color, 'LineWidth', lw_xline)
 
 set(gca, 'LineWidth', lw_axis, 'XLim', [0,30], ...
     'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
@@ -338,7 +311,7 @@ ylabel('PDF')
 legend({'Initial', 'Escape', 'Relax'}, 'Location', 'best')
 legend('Box', 'off')
 
-% Group cohesion
+%% Group cohesion
 
 grp_cohesion = nan(n_iter, no_it); % grp cohesion 2D
 grp_coh_x = nan(n_iter, no_it); % gc along x axis
@@ -532,38 +505,20 @@ set(gca, 'XLim', [-0.5 3], 'YLim', [0,9], 'LineWidth', lw_axis, ...
     'Xcolor', 'k', 'YColor', 'k', ...
     'FontSize', font_size, 'FontName', 'Helvetica')
 
-xlabel('t_n', 'FontSize', label_fs)
+xlabel('Normalised time', 'FontSize', label_fs)
 ylabel('Dispersion (cm)', 'FontSize', label_fs)
+
+%% pdf of grp cohesion
 
 plt_count = plt_count + 1;
 fig = figure(plt_count);
 fig.Position = [300, 1200, 800, 700];
 
-[gc_ini_hist_emp, gc_ini_edges_emp] = histcounts(gc_ini_emp, 'Normalization', 'pdf');
-[gc_esp_hist_emp, gc_esp_edges_emp] = histcounts(gc_esp_emp, 'Normalization', 'pdf');
-[gc_relax_hist_emp, gc_relax_edges_emp] = histcounts(gc_relax_emp, 'Normalization', 'pdf');
-
-plot(gc_ini_edges_emp(1:end-1), gc_ini_hist_emp, '-', ...
-    'Color', ini_color, 'LineWidth', lw_xline)
+plot(gc_ini_edges(1:end-1), gc_ini_hist, '-', 'Color', ini_color, 'LineWidth', lw_xline)
 hold on
-plot(gc_esp_edges_emp(1:end-1), gc_esp_hist_emp, '-', ...
-    'Color', esp_color, 'LineWidth', lw_xline)
+plot(gc_esp_edges(1:end-1), gc_esp_hist, '-', 'Color', esp_color, 'LineWidth', lw_xline)
 hold on
-plot(gc_relax_edges_emp(1:end-1), gc_relax_hist_emp, '-', ...
-    'Color', relax_color, 'LineWidth', lw_xline)
-hold on
-plot(gc_ini_edges(1:end-1), gc_ini_hist, '--', 'Color', ini_color, 'LineWidth', lw_xline)
-hold on
-plot(gc_esp_edges(1:end-1), gc_esp_hist, '--', 'Color', esp_color, 'LineWidth', lw_xline)
-hold on
-plot(gc_relax_edges(1:end-1), gc_relax_hist, '--', 'Color', relax_color, 'LineWidth', lw_xline)
-
-% hold on
-% xline(median(gc_ini), '--k', 'LineWidth', 2)
-% hold on
-% xline(median(gc_esp), '--r', 'LineWidth', 2)
-% hold on
-% xline(median(gc_relax), '--g', 'LineWidth', 2)
+plot(gc_relax_edges(1:end-1), gc_relax_hist, '-', 'Color', relax_color, 'LineWidth', lw_xline)
 
 set(gca, 'LineWidth', lw_axis, 'XLim', [0,12], ...
     'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
@@ -575,7 +530,7 @@ ylabel('PDF')
 legend({'Initial', 'Escape', 'Relax'}, 'Location', 'north')
 legend('Box', 'off')
 
-% time crossing
+%% time crossing
 
 [fcross_tmin, rank_id_min] = sort(en_start, 1, 'ascend'); % arranging start in ascending order.
 [fcross_tcentre, rank_id_centre] = sort(en_centre, 1, 'ascend');
@@ -678,14 +633,15 @@ errorbar((1:n)+0.1, mean_td_max, se_td_max, 'o', ...
 legend({'barrier-start', 'barrier-centre', 'barrier-last'}, 'Location', 'best')
 legend('Box', 'off')
 
-set(gca, 'XLim', [st_id-0.4 n+0.2], 'XTick', 1:n, 'LineWidth', lw_axis, ...
-        'Xcolor', 'k', 'YColor', 'k', ...
-        'FontSize', font_size, 'FontName', 'Helvetica')
+set(gca, 'XLim', [st_id-0.4 n+0.2], 'XTick', 1:n, 'YLim', [0,1], ...
+    'YTick', 0:.2:1, 'LineWidth', lw_axis, ...
+    'Xcolor', 'k', 'YColor', 'k', ...
+    'FontSize', font_size, 'FontName', 'Helvetica')
 
 xlabel('Crossing rank', 'FontSize', label_fs)
 ylabel('Time since previous fish crossed (s)', 'FontSize', label_fs)
 
-% time difference in normalised time
+%% time difference in normalised time
 
 mean_td_min_normalised = nan(1,n);
 std_td_min_normalised = nan(1,n);
@@ -709,25 +665,19 @@ fig.Position = [300, 1200, 800, 700];
 
 st_id = 2;
 
-mean_td_min_normalised_emp = [0.4281, 0.2293, 0.1236, 0.1018, 0.1172];
-se_td_min_normalised_emp = [0.0227, 0.0131, 0.0103, 0.0111, 0.0111];
-
 errorbar((1:n), mean_td_min_normalised, se_td_min_normalised, 'o', ...
         'LineWidth', lw_plot, 'Color', ini_color, 'MarkerSize', mr_size, ...
         'MarkerFaceColor', ini_color)
-hold on
-errorbar((1:n), mean_td_min_normalised_emp, se_td_min_normalised_emp, 'o', ...
-        'LineWidth', lw_plot, 'Color', 'r', 'MarkerSize', mr_size, ...
-        'MarkerFaceColor', 'r')
 
-set(gca, 'XLim', [st_id-0.4 n+0.2], 'XTick', 1:n, 'LineWidth', lw_axis, ...
-        'Xcolor', 'k', 'YColor', 'k', ...
-        'FontSize', font_size, 'FontName', 'Helvetica')
+set(gca, 'XLim', [st_id-0.4 n+0.2], 'XTick', 1:n, 'YLim', [0,.22], 'YTick', 0:.05:.2, ...
+    'LineWidth', lw_axis, ...
+    'Xcolor', 'k', 'YColor', 'k', ...
+    'FontSize', font_size, 'FontName', 'Helvetica')
 
 xlabel('Crossing rank', 'FontSize', label_fs)
-ylabel('Time since previous fish crossed (normalised time)', 'FontSize', label_fs)
+ylabel('Normalised time since \newline previous fish crossed', 'FontSize', label_fs)
 
-% time to cross
+%% time to cross
 
 mean_tcross = nan(1,n);
 std_tcross = nan(1,n);
@@ -749,21 +699,19 @@ plt_count = plt_count + 1;
 fig = figure(plt_count);
 fig.Position = [300, 1200, 800, 700];
 
-% mean_tc_min_model = [(1:n)', mean_tcross', std_tcross', se_tcross', median_tcross'];
-% writematrix(mean_tc_min_model, 'mean_tc_model.csv')
-
 errorbar((st_id:n) - 0.075, mean_tcross(st_id:n), se_tcross(st_id:n), ...
     'LineStyle', "none", "Marker", "o", "Color", ini_color, ...
     'LineWidth', lw_plot, 'MarkerSize', 10, 'MarkerFaceColor', ini_color)
 
 set(gca, 'XLim', [st_id-0.2 n+0.2], 'XTick', st_id:n, ...
+    'YLim', [0 4], 'YTick', 0:1:4, ...
     'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
     'FontSize', font_size, 'FontName', 'Helvetica')
 
-xlabel('Crossing rank', 'FontSize', 23)
-ylabel('Time since green light on (s)', 'FontSize', 23)
+xlabel('Crossing rank', 'FontSize', label_fs)
+ylabel('Time since green light on (s)', 'FontSize', label_fs)
 
-% time to cross in normalised time
+%% time to cross in normalised time
 
 mean_tcross_normalised = nan(1,n);
 std_tcross_normalised = nan(1,n);
@@ -785,26 +733,19 @@ plt_count = plt_count + 1;
 fig = figure(plt_count);
 fig.Position = [300, 1200, 800, 700];
 
-mean_tcross_normalised_emp = [0.4281, 0.6574, 0.7810, 0.8828, 1.0000];
-se_tcross_normalised_emp = [0.0227, 0.0169, 0.0136, 0.0111, 0];
-
 errorbar((st_id:n) - 0.075, mean_tcross_normalised(st_id:n), se_tcross_normalised(st_id:n), ...
     'LineStyle', "none", "Marker", "o", "Color", ini_color, ...
     'LineWidth', lw_plot, 'MarkerSize', 10, 'MarkerFaceColor', ini_color)
-hold on
-errorbar((st_id:n) - 0.075, mean_tcross_normalised_emp(st_id:n), ...
-    se_tcross_normalised_emp(st_id:n), ...
-    'LineStyle', "none", "Marker", "o", "Color", 'r', ...
-    'LineWidth', lw_plot, 'MarkerSize', 10, 'MarkerFaceColor', 'r')
 
 set(gca, 'XLim', [st_id-0.2 n+0.2], 'XTick', st_id:n, ...
+    'YLim', [0, 1], 'YTick', 0:.2:1, ...
     'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
     'FontSize', font_size, 'FontName', 'Helvetica')
 
-xlabel('Crossing rank', 'FontSize', 23)
-ylabel('Time since green light on (normalised time)', 'FontSize', 23)
+xlabel('Crossing rank', 'FontSize', label_fs)
+ylabel('Normalised crossing time \newline since green light on', 'FontSize', label_fs)
 
-% distance to conditioned fish
+%% distance to conditioned fish
 
 dist_min_wall = nan(n, no_it); % distance to the closest wall (only along x axis)
 dist_cent_wall = nan(n, no_it); % distance to centre of closest wall (2-D)
@@ -876,7 +817,7 @@ set(gca, 'XLim', [1.7 5+0.3], 'XTick', 1:n, 'YLim', [0, 7], ...
 xlabel('Crossing rank', 'FontSize', 23)
 ylabel("Distance to conditioned fish (cm)", 'FontSize', 23)
 
-% relative orientation and viewing angle
+%% relative orientation and viewing angle
 
 psi_ic = nan(n-1, no_it); % viewing angle when the light was turned on
 phi_ic = nan(n-1, no_it); % relative orientation when light was turned on

@@ -18,12 +18,12 @@ esp_color = "#fa4d56";
 relax_color = "#198038";
 speed_plt_color = ["#6929c4", "#1192e8", "#005d5d", "#9f1853", "#d2a106"];
 
-font_size = 25;
+font_size =30;
 lw_axis = 2;
-lw_plot = 2;
+lw_plot = 3;
 lw_xline = 3;
 mr_size = 10;
-label_fs = 25;
+label_fs = 30;
 
 %%
 
@@ -127,7 +127,7 @@ set(gca, 'XLim', [-0.5 3], 'YLim', [0,1], 'YTick', 0:0.2:1, ...
     'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
     'FontSize', font_size, 'FontName', 'Helvetica')
 
-xlabel('t_n', 'FontSize', label_fs)
+xlabel('Normalised time', 'FontSize', label_fs)
 ylabel('Polarisation', 'FontSize', label_fs)
 
 %% Group speed dynamics
@@ -203,11 +203,11 @@ xline(1, '--r', 'LineWidth', lw_plot)
 
 legend({'CR-1', 'CR-2', 'CR-3', 'CR-4', 'CR-5'}, 'Location', 'best')
 legend('box','off')
-set(gca, 'XLim', [-0.5 2], 'YLim', [0, 5], 'YTick', 0:.5:5, ...
+set(gca, 'XLim', [-0.5 2], 'YLim', [0,20], 'YTick', 0:4:20, ...
     'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
     'FontSize', font_size, 'FontName', 'Helvetica')
 
-xlabel('t_n', 'FontSize', label_fs)
+xlabel('Normalised time', 'FontSize', label_fs)
 ylabel('Speed (cm/s)', 'FontSize', label_fs)
 
 %% Group cohesion
@@ -263,14 +263,14 @@ plt_count = plt_count + 1;
 fig = figure(plt_count);
 fig.Position = [300, 1200, 800, 700];
 
-plot(t_edges, mean_gc, 'o-', 'Color', '#A52A2A', 'LineWidth', lw_plot, ...
-    'MarkerFaceColor', '#A52A2A')
+plot(t_edges, mean_gc, 'o-', 'Color', ini_color, 'LineWidth', lw_plot, ...
+    'MarkerFaceColor', ini_color)
 
-set(gca, 'XLim', [-0.5 3], 'YLim', [0, 10], 'LineWidth', lw_axis, ...
-    'Xcolor', 'k', 'YColor', 'k', ...
+set(gca, 'XLim', [-0.5 3], 'YLim', [0, 10.5], 'YTick', 0:2:10, ...
+    'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
     'FontSize', font_size, 'FontName', 'Helvetica')
 
-xlabel('t_n', 'FontSize', label_fs)
+xlabel('Normalised time', 'FontSize', label_fs)
 ylabel('Dispersion (cm)', 'FontSize', label_fs)
 
 %% time crossing
@@ -350,12 +350,12 @@ errorbar((st_id:n)-0.1, mean_td_min*dt, se_td_min*dt, 'o', ...
 % legend({'barrier-start', 'barrier-centre', 'barrier-last'}, 'Location', 'best')
 % legend('Box', 'off')
 
-set(gca, 'XLim', [st_id-0.4 n+0.2], 'XTick', 1:n, 'YLim', [0,3], ...
+set(gca, 'XLim', [1.8 n+0.2], 'XTick', 2:n, 'YLim', [0, 0.5], 'YTick', 0:0.1:1, ...
     'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
     'FontSize', font_size, 'FontName', 'Helvetica')
 
-xlabel('Crossing rank', 'FontSize', label_fs)
-ylabel('Time since previous fish crossed (s)', 'FontSize', label_fs)
+xlabel('Crossing rank', 'FontSize', font_size)
+ylabel('Time since previous \newline fish crossed (s)', 'FontSize', font_size)
 
 %%
 
@@ -410,77 +410,23 @@ plt_count = plt_count + 1;
 fig = figure(plt_count); 
 fig.Position = [300, 1200, 800, 700];
 
-errorbar((2:n)-0.075, mean_dist_to_cond_x, se_dist_to_cond_x, ...
+errorbar((2:n)-0.05, mean_dist_to_cond_x, se_dist_to_cond_x, ...
     'LineStyle', "none", "Marker", "s", ...
     "Color", ini_color, 'LineWidth', lw_plot, 'MarkerSize', ...
     10, 'MarkerFaceColor', ini_color)
 hold on
-errorbar((2:n)-0.075, mean_dist_to_cond, se_dist_to_cond, 'LineStyle', ...
+errorbar((2:n)+0.05, mean_dist_to_cond, se_dist_to_cond, 'LineStyle', ...
     "none", "Marker", "d", ...
     "Color", ini_color, 'LineWidth', lw_plot, 'MarkerSize', 10, ...
     'MarkerFaceColor', ini_color)
 
-legend({'x^i_{C}', 'r^i_{C}'}, 'Location', 'best')
+legend({'x^i_{C}', 'r^i_{C}'}, 'Location', 'southeast')
 legend('Box', 'off')
 
-set(gca, 'XLim', [1.7 5+0.3], 'XTick', 1:n, ...
+set(gca, 'XLim', [1.9 5.1], 'XTick', 2:n, 'YLim', [0, 15], ...
+    'YTick', 0:3:15,...
     'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
     'FontSize', font_size, 'FontName', 'Helvetica')
 
-xlabel('Crossing rank', 'FontSize', 23)
-ylabel("Distance to conditioned fish (cm)", 'FontSize', 23)
-
-
-%% distribution of distance to min tank x
-
-% plt_count = plt_count + 1;
-% figure(plt_count)
-% 
-% mean_dist_min_wall_x = mean(dist_min_wall, 2); % mean distance to closest x-wall
-% std_dist_min_wall_x = std(dist_min_wall, 0, 2);
-% se_dist_min_wall_x = std_dist_min_wall_x/sqrt(no_it);
-% 
-% for i = 1:n
-% 
-%     scatter(i, dist_min_wall(i,:), 10, "k", 'filled')
-%     hold on
-% 
-% end
-% ylabel("Distance to tank wall")
-% xlim([0.5 5.5])
-% 
-% plt_count = plt_count + 1;
-% figure(plt_count)
-% 
-% errorbar(1:n, mean_dist_min_wall_x, se_dist_min_wall_x, 'LineStyle', "none", "Marker", "o", ...
-%     "Color", "k")
-% xlim([0.5 5.5])
-% ylabel("Distance to tank wall (x)")
-% 
-% %% distribution of distance to tank centre
-% 
-% plt_count = plt_count + 1;
-% figure(plt_count)
-% 
-% mean_dist_to_cent = mean(dist_cent_wall, 2); % distance to centre of closest x-wall
-% std_dist_to_cent = std(dist_cent_wall, 0, 2);
-% se_dist_to_cent = std_dist_to_cent/sqrt(no_it);
-% 
-% errorbar(1:n, mean_dist_to_cent, se_dist_to_cent, 'LineStyle', "none", "Marker", "o", ...
-%     "Color", "k")
-% xlim([0.5 5.5])
-% ylabel("Distance to tank centre")
-% 
-% plt_count = plt_count + 1;
-% figure(plt_count)
-% 
-% for i = 1:n
-% 
-%     scatter(i, dist_cent_wall(i,:), 10, "k", 'filled')
-%     hold on
-% 
-% end
-% xlim([0.5 5.5])
-% ylabel("Distance to tank centre")
-
-
+xlabel("Crossing rank", 'FontSize', font_size)
+ylabel("Distance to conditioned \newline fish (cm)", 'FontSize', font_size)

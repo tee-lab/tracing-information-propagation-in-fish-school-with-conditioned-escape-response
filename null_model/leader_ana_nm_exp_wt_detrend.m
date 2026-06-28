@@ -23,7 +23,7 @@ no_cal_corr_event = 3;
 
 %% identifying leadership 
 
-for cal_corr_event = 1:no_cal_corr_event
+for cal_corr_event = 2:2%no_cal_corr_event
 
     % check if the time-series is stationary.
     is_stationary = nan(no_exp*no_it*n, 1);

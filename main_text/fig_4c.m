@@ -335,5 +335,3 @@ p = plot(avg_pm_graph, 'LineWidth', 5, 'ArrowSize', 20, 'Layout', 'layered', ...
     'EdgeColor', esp_color, 'NodeColor', esp_color);
 % labeledge(p, 1:numedges(avg_pm_graph), round(avg_esp_cc_lag,3))
 % labeledge(p, 1:numedges(avg_pm_graph), 1)
-
-exportgraphics(gca, 'pert_test_net.pdf', 'ContentType', 'vector')

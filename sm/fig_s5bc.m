@@ -15,8 +15,8 @@ tank_width = 20;
 t_cut_min = -0.5;
 t_cut_max = 3;
 
-font_size = 25;
-lw_plot = 2;
+font_size = 30;
+lw_plot = 3;
 lw_axis = 2;
 
 ini_color = "#33b1ff";
@@ -83,13 +83,13 @@ plt_count = 1;
 fig = figure(plt_count);
 fig.Position = [300, 1200, 800, 700];
 
-errorbar((2:n) - 0.05, mean_psi_ic, error_psi_ic, "o", 'MarkerEdgeColor',  ini_color, ...
-    'MarkerFaceColor',  ini_color, 'color', ini_color, 'LineWidth', lw_plot, ...
+errorbar((2:n) - 0.05, mean_psi_ic, error_psi_ic, "o", 'MarkerEdgeColor',  esp_color, ...
+    'MarkerFaceColor',  esp_color, 'color', esp_color, 'LineWidth', lw_plot, ...
     'MarkerSize', 10)
 hold on
 errorbar((2:n) + 0.05, mean_psi_ic_model, se_psi_ic_model, ...
-    "o", 'MarkerEdgeColor',  esp_color, ...
-    'MarkerFaceColor',  esp_color, 'color', esp_color, 'LineWidth', lw_plot, ...
+    "o", 'MarkerEdgeColor',  ini_color, ...
+    'MarkerFaceColor',  ini_color, 'color', ini_color, 'LineWidth', lw_plot, ...
     'MarkerSize', 10)
 
 legend({'Experiment', 'Model'}, 'Location', 'southwest')
@@ -99,10 +99,10 @@ set(gca, 'XLim', [1.8 n+0.2], 'YLim', [0,120], 'XTick', 1:n, ...
     'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
     'FontSize', font_size, 'FontName', 'Helvetica')
 
-xlabel('Crossing rank', 'FontSize', 23)
-ylabel('Viewing angle (in degree)', 'FontSize', 23)
+xlabel('Crossing rank', 'FontSize', 27)
+ylabel('Viewing angle (in degree)', 'FontSize', 27)
 
-% exportgraphics(gca, 'psi_data.pdf', 'ContentType', 'vector')
+exportgraphics(gca, 'psi_data.pdf', 'ContentType', 'vector')
 
 %% plotting relative orientation
 
@@ -124,12 +124,12 @@ plt_count = plt_count + 1;
 fig = figure(plt_count);
 fig.Position = [300, 1200, 800, 700];
 
-errorbar((2:n)-0.05, mean_phi_ic, error_phi_ic, "o", 'MarkerEdgeColor',  ini_color, ...
-    'MarkerFaceColor',  ini_color, 'Color', ini_color, 'LineWidth', lw_plot, ...
+errorbar((2:n)-0.05, mean_phi_ic, error_phi_ic, "o", 'MarkerEdgeColor',  esp_color, ...
+    'MarkerFaceColor',  esp_color, 'Color', esp_color, 'LineWidth', lw_plot, ...
     'MarkerSize', 10)
 hold on
-errorbar((2:n)+0.05, mean_phi_ic_model, se_phi_ic_model, "o", 'MarkerEdgeColor',  esp_color, ...
-    'MarkerFaceColor',  esp_color, 'Color', esp_color, 'LineWidth', lw_plot, ...
+errorbar((2:n)+0.05, mean_phi_ic_model, se_phi_ic_model, "o", 'MarkerEdgeColor',  ini_color, ...
+    'MarkerFaceColor',  ini_color, 'Color', ini_color, 'LineWidth', lw_plot, ...
     'MarkerSize', 10)
 
 % legend({'Experiment', 'Model'}, 'Location', 'northwest')
@@ -139,10 +139,10 @@ set(gca, 'XLim', [1.8 n+0.2], 'YLim', [0,120], 'XTick', 1:n, ...
     'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
     'FontSize', font_size, 'FontName', 'Helvetica')
 
-xlabel('Crossing rank', 'FontSize', 23)
-ylabel('Relative orientation (in degree)', 'FontSize', 23)
+xlabel('Crossing rank', 'FontSize', 27)
+ylabel('Relative orientation (in degree)', 'FontSize', 27)
 
-% exportgraphics(gca, 'phi_data.pdf', 'ContentType', 'vector')
+exportgraphics(gca, 'phi_data.pdf', 'ContentType', 'vector')
    
 %% saving it to csv
 

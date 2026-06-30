@@ -5,7 +5,7 @@ clc
 %% load files
 
 fname = "sim";
-method = "_stat_"; % stat or pm
+method = "_pm_"; % stat or pm
 phase = 2; % 1, 2, 3
 fnet_name = strcat('full_net', method, 'phase_', num2str(phase), '_', fname, '.csv');
 dnet_name = strcat('diff_net', method, 'phase_', num2str(phase), '_', fname, '.csv');
@@ -26,24 +26,6 @@ ini_color = "#0096FF";
 esp_color = "#EE4B2B";
 relax_color = "#097969";
 font_size = 25;
-
-%% Check if the time series are stationary
-% 
-% if method == "_stat_"
-% 
-%     is_stat_fname = strcat('is_stat_phase', num2str(1), '_', fname, '.csv');
-%     is_stat = readmatrix(is_stat_fname);
-% 
-%     figure(plt_count)
-%     plt_count = plt_count + 1;
-% 
-%     histogram(is_stat, 'Normalization', 'pdf')
-%     h = gca;
-%     h.XTick = [0, 1];
-%     h.XTickLabel = {'Non-Stat', 'Stat'};
-%     ylabel('PDF')
-% 
-% end
 
 %% constructing full network
 

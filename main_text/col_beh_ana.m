@@ -56,6 +56,12 @@ speed_ini_all = []; % store all speeds in initial phase
 speed_escape_all = []; % store all speed in escape phase.
 speed_relax_all = []; % store all speeds in relax phase
 
+mean_spd_cr_ini_video = nan(n, no_exp); % stores mean spd of ini phase for a given video
+mean_spd_cr_relax_video = nan(n, no_exp); % stores mean spd of relax phase for a given vide
+
+mean_spd_ini_video = nan(no_exp,1); % stores mean spd of all fish inini phase for a given video
+mean_spd_relax_video = nan(no_exp,1); % stores mean spd of all fish in relax phase for a given video
+
 pol_ini_all = []; % store all pol in ini phase
 pol_esp_all = []; % store all pol in esp phase
 pol_relax_all = []; % store all pol in relax phase
@@ -357,6 +363,14 @@ for e = 1:no_exp
     median_speed_ini(:,e) = mean(speed_ini,2);
     median_speed_esp(:,e) = mean(speed_esp,2);
     median_speed_relax(:,e) = mean(speed_relax,2);
+
+    % mean spd ini (rank and video)
+    mean_spd_ini_video(e) = mean(speed_ini(:));
+    mean_spd_cr_ini_video(:,e) = mean(speed_ini,2);
+
+    % mean spd relax (rank and video)
+    mean_spd_relax_video(e) = mean(speed_relax(:));
+    mean_spd_cr_relax_video(:,e) = mean(speed_relax,2);
     
     spd_all_temp = speed_rank(:,t_plt >= t_cut_min & t_plt <= t_cut_max);
     spd_all_temp = [t_plt(t_plt >= t_cut_min & t_plt <= t_cut_max)', spd_all_temp'];
@@ -1077,62 +1091,63 @@ ylabel('Mean speed (cm/s)')
 
 %% distance travelled by naive and conditioned fish in ini phase
 
+% plt_count = plt_count + 1;
+% fig = figure(plt_count);
+% fig.Position = [300, 1200, 800, 700];
+% 
+% dist_travelled_ini = dist_travelled_ini';
+% mean_dist_travel_ini = mean(dist_travelled_ini,1);
+% std_dist_travel_ini = std(dist_travelled_ini,1);
+% std_error_dt_ini = std_dist_travel_ini/sqrt(no_exp);
+% 
+% % distance travelled by naive and conditioned fish in relax phase
+% 
+% dist_travelled_relax = dist_travelled_relax';
+% mean_dist_travel_relax = mean(dist_travelled_relax,1);
+% std_dist_travel_relax = std(dist_travelled_relax,1);
+% std_error_dt_relax = std_dist_travel_relax/sqrt(no_exp);
+% 
+% errorbar(1:n, mean_dist_travel_ini, std_error_dt_ini, 'LineStyle', "none", "Marker", "o", ...
+%     "Color", ini_color, 'LineWidth', lw_plot, 'MarkerSize', 10, ...
+%     'MarkerFaceColor', ini_color)
+% hold on
+% errorbar(1:n, mean_dist_travel_relax, std_error_dt_relax, ...
+%     'LineStyle', "none", "Marker", "o", "Color", relax_color, ...
+%     'LineWidth', lw_plot, 'MarkerSize', 10, 'MarkerFaceColor', relax_color)
+% 
+% set(gca, 'XLim', [.9 5.1], 'XTick', 1:5, 'YLim', [0,100], ...
+%     'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
+%     'FontSize', font_size, 'FontName', 'Helvetica')
+% 
+% legend({'Initial', 'Relax'}, 'Location', 'best')
+% legend('Box', 'off')
+% 
+% xlabel('Crossing rank')
+% ylabel('Distance travelled (cm)')
+
+%% mean speed by naive and conditioned fish in ini and relax phase
+
+% ini phase
+
+ms_cr_ini = mean(mean_spd_cr_ini_video,2);
+sd_s_cr_ini = std(mean_spd_cr_relax_video,0,2);
+se_s_cr_ini = sd_s_cr_ini/sqrt(no_exp);
+
+% relax phase
+
+ms_cr_relax = mean(mean_spd_cr_relax_video,2);
+sd_s_cr_relax = std(mean_spd_cr_relax_video,0,2);
+se_s_cr_relax = sd_s_cr_relax/sqrt(no_exp);
+
 plt_count = plt_count + 1;
 fig = figure(plt_count);
 fig.Position = [300, 1200, 800, 700];
 
-dist_travelled_ini = dist_travelled_ini';
-mean_dist_travel_ini = mean(dist_travelled_ini,1);
-std_dist_travel_ini = std(dist_travelled_ini,1);
-std_error_dt_ini = std_dist_travel_ini/sqrt(no_exp);
-
-% distance travelled by naive and conditioned fish in relax phase
-
-dist_travelled_relax = dist_travelled_relax';
-mean_dist_travel_relax = mean(dist_travelled_relax,1);
-std_dist_travel_relax = std(dist_travelled_relax,1);
-std_error_dt_relax = std_dist_travel_relax/sqrt(no_exp);
-
-errorbar(1:n, mean_dist_travel_ini, std_error_dt_ini, 'LineStyle', "none", "Marker", "o", ...
-    "Color", ini_color, 'LineWidth', lw_plot, 'MarkerSize', 10, ...
-    'MarkerFaceColor', ini_color)
-hold on
-errorbar(1:n, mean_dist_travel_relax, std_error_dt_relax, ...
-    'LineStyle', "none", "Marker", "o", "Color", relax_color, ...
-    'LineWidth', lw_plot, 'MarkerSize', 10, 'MarkerFaceColor', relax_color)
-
-set(gca, 'XLim', [.9 5.1], 'XTick', 1:5, 'YLim', [0,100], ...
-    'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
-    'FontSize', font_size, 'FontName', 'Helvetica')
-
-legend({'Initial', 'Relax'}, 'Location', 'best')
-legend('Box', 'off')
-
-xlabel('Crossing rank')
-ylabel('Distance travelled (cm)')
-
-%% mean speed by naive and conditioned fish in ini
-
-plt_count = plt_count + 1;
-fig = figure(plt_count);
-fig.Position = [300, 1200, 800, 700];
-
-mean_spd_ini = mean(speed_ini_all,2);
-std_spd_ini = std(speed_ini_all,0, 2);
-std_err_spd_ini = std_spd_ini/sqrt(no_exp);
-
-% mean speed by naive and conditioned fish in relax phase
-
-mean_spd_relax = mean(speed_relax_all,2);
-std_spd_relax = std(speed_relax_all,0,2);
-std_err_spd_relax = (std_spd_relax)/sqrt(no_exp);
-
-
-errorbar((1:n)-0.1, mean_spd_ini, std_err_spd_ini, ...
+errorbar((1:n)-0.1, ms_cr_ini, se_s_cr_ini, ...
     'LineStyle', "none", "Marker", "o", "Color", ini_color, ...
     'LineWidth', lw_plot, 'MarkerSize', 10, 'MarkerFaceColor', ini_color)
 hold on
-errorbar((1:n)+0.1, mean_spd_relax, std_err_spd_relax, ...
+errorbar((1:n)+0.1, ms_cr_relax, se_s_cr_relax, ...
     'LineStyle', "none", "Marker", "o", "Color", relax_color, ...
     'LineWidth', lw_plot, 'MarkerSize', 10, 'MarkerFaceColor', relax_color);
 
@@ -1143,7 +1158,7 @@ set(gca, 'XLim', [.5 5.5], 'XTick', 1:5, 'YLim', [0,8], 'YTick', 0:2:8, ...
 xlabel('Crossing rank')
 ylabel('Mean speed (cm/s)')
 
-legend({'Initial', 'Relax'}, 'Location', 'best')
+legend({'Initial', 'Relaxation'}, 'Location', 'best')
 legend('Box', 'off')
 
 %% plotting distributions of speeds in initial, eps and relax phase
@@ -1305,3 +1320,35 @@ ax.YAxis.MinorTickValues = 0:.1:1;
 
 xlabel('Dispersion (cm)')
 ylabel('PDF')
+
+%% storing mean speed from ini and relax to compare speed of different rank fish
+
+% initial
+
+video = 1:no_exp;
+cross_rank = (1:n)';
+cross_rank = repmat(cross_rank, no_exp, 1);
+video = repmat(video, n, 1);
+video = video(:);
+mean_spd_cr_ini_video = mean_spd_cr_ini_video(:);
+
+mean_spd_cr_ini_video_data = [video, cross_rank, mean_spd_cr_ini_video];
+writematrix(mean_spd_cr_ini_video_data, 'mean_spd_cr_ini_video_data.csv')
+
+% relax
+
+video = 1:no_exp;
+cross_rank = (1:n)';
+cross_rank = repmat(cross_rank, no_exp, 1);
+video = repmat(video, n, 1);
+video = video(:);
+mean_spd_cr_relax_video = mean_spd_cr_relax_video(:);
+
+mean_spd_cr_relax_video_data = [video, cross_rank, mean_spd_cr_relax_video];
+writematrix(mean_spd_cr_relax_video_data, 'mean_spd_cr_relax_video_data.csv')
+
+% mean
+
+video = (1:no_exp)';
+mean_spd_ini_video_data = [video, mean_spd_ini_video, mean_spd_relax_video];
+writematrix(mean_spd_ini_video_data, 'mean_spd_video_data.csv')

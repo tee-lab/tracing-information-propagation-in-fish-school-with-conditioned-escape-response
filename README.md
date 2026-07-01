@@ -45,6 +45,10 @@ generate the leader-follower interaction network for the experimental data.
 
 ## Code for results from the model of collective escape dynamics
 
+We provide the required `.csv` files containing the model results in the `/main_text` 
+directory to reproduce all the figures in the main text. However, all the data can be 
+generated using the code provided in the `/model` folder.
+
 1. **Simulate the model:** Run `/model/sim_data.m` to simulate the model. 
 2. **Calculate group properties:** Run `model/grp_properties.m` to generate figure 2g–h, 
 figure 3, figure 4a–b, and electronic supplementary material figures S7 and S8. 

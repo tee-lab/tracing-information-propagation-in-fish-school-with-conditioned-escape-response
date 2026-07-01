@@ -144,7 +144,7 @@ for t = 800:2:2200 %(t_et)
     elseif t >= t_atk && t <= en_end_escape
         title("Escape phase", 'FontSize', 30)
     else
-        title("Relax", 'FontSize', 30)
+        title("Relaxation phase", 'FontSize', 30)
     end
 
     set(gca, 'XLim', [0 box_len], 'YLim', [0, box_width], ...

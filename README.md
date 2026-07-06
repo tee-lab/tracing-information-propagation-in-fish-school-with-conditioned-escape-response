@@ -38,6 +38,8 @@ of polarisation, dispersion, and speed across the initial, escape, and relaxatio
 it calculates the normalised crossing time since the green light turned on and the 
 normalised time since the previous fish crossed the hurdle, both as a function of crossing rank.
 
+_Note:_ Ensure `getCor_scalar.m` is in the same folder. 
+
 ## Code for figure 4c
 
 **Leader-follower interaction network during collective escape:** Run `main_text/fig_4c.m` to 

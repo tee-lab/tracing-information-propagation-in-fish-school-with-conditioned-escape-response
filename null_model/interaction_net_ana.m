@@ -9,7 +9,7 @@ clc
 % fname = fname(1:end-4);
 fname = "vs_nm";
 
-method = "_stat_"; % stat or pm
+method = "_pm_"; % stat or pm
 phase = 2; % 1, 2, 3
 fnet_name = strcat('full_net', method, 'phase_', num2str(phase), '_', fname, '.csv');
 dnet_name = strcat('diff_net', method, 'phase_', num2str(phase), '_', fname, '.csv');
@@ -23,7 +23,7 @@ row_avg_cc = 3;
 row_avg_edges = 4;
 no_exp = 39;
 
-min_edges = 0.05;
+min_edges = 0.0;
 
 plt_count = 0;
 
@@ -68,11 +68,12 @@ if ~isempty(full_net)
     plt_count = plt_count + 1;
     fig = figure(plt_count);
     fig.Position = [300, 300, 1000, 1000];
-    plot(full_int_graph, 'LineWidth', 2, ...
+    plot(full_int_graph, 'LineWidth', 5, ...
         'EdgeLabel', round(full_int_graph.Edges.Weight,2),...
-        'EdgeFontSize', 10+full_int_graph.Edges.Weight, ...
+        'EdgeFontSize', 25+full_int_graph.Edges.Weight, ...
         'Layout', 'layered', 'EdgeFontWeight', 'bold', ...
-        'ArrowSize', 20, 'EdgeColor', esp_color, 'NodeColor', esp_color)
+        'ArrowSize', 30, 'EdgeColor', esp_color, 'NodeColor', esp_color, ...
+        'NodeFontSize', 40, 'MarkerSize', 20)
 
 end
 
@@ -96,7 +97,7 @@ if ~isempty(diff_net)
     fig.Position = [300, 1200, 900, 800];
     plot(diff_int_graph, 'LineWidth', 6*diff_int_graph.Edges.Weight, ...
         'EdgeLabel', round(diff_int_graph.Edges.Weight,2),...
-        'EdgeFontSize', 15+diff_int_graph.Edges.Weight, ...
+        'EdgeFontSize', 20+diff_int_graph.Edges.Weight, ...
         'Layout', 'layered', 'EdgeFontWeight', 'bold', ...
         'ArrowSize', 20, 'EdgeColor', 'magenta', 'NodeColor', 'magenta')
 

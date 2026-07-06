@@ -35,7 +35,7 @@ m_d = 2.5;
 gamma = 0.25*scaled_para; % rate at which escape direction info is lost.
 
 no_it = 53; % no.of iteration (same as no.of trails)
-no_exp = 10; % no.of sets of trails
+no_exp = 30; % no.of sets of trails
 
 stb_time = 1500;
 

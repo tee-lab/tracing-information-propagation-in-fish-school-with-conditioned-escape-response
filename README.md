@@ -70,7 +70,7 @@ in the electronic supplementary material section S1.
 supplementary material figure S3. This code also generates the mean group speed for the null model (figure S6), 
 which can be compared with figure 2g of the collective escape model. 
 3. **Leader-follower interaction network:** Run `/null_model/pert_test_exp.m` to construct the 
-leader-follower network described in Section 3b of the main text. This script 
+leader-follower network described in Section 3b of the main text and reproduce figure S8. This script 
 generates a `.csv` file containing the leader-follower data. Run `/model/interaction_net_ana.m` 
 to generate the network. In the null model, no leader-follower pairs are found because there 
 are no interactions between agents.  

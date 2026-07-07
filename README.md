@@ -5,7 +5,7 @@ Aimon, C., Lamshana, F., Trendafilov, D., Escobedo, R., Sire, C., Theraulaz, G.,
 Guttal, V. (2026). Tracing information propagation in fish schools with a conditioned 
 escape response. 
 
-The codes are tested to run on MATLAB Version: 25.2.0.3177638 (R2025b).
+The codes are tested to run on MATLAB Version: 25.2.0.3177638 (R2025b). Ensure that the `Signal processing` and `Econometrics` toolboxes are installed. 
 
 ## Data
 

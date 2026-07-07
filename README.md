@@ -10,7 +10,7 @@ The codes are tested to run on MATLAB Version: 25.2.0.3177638 (R2025b). Ensure t
 ## Data
 
 Tracked fish trajectory data used in Figure 1e are available in the `/main_text/` folder. Tracks 
-of each fish are labelled as `Clip0036_1C_4N_E4_4_bee1.csv`, `Clip0036_1C_4N_E4_4_bee2.csv`, ..., 
+of each fish are labelled as `Clip0036_1C_4N_E4_4_bee1.csv`, `Clip0036_1C_4N_E4_4_bee2.csv`, $\dots$, 
 `Clip0036_1C_4N_E4_4_bee5.csv`. The first, second, and third columns in the `.csv` files 
 represent the frame number (at 100 frames per second), the position along the x-axis (cm), 
 and the position along the y-axis (cm), respectively.

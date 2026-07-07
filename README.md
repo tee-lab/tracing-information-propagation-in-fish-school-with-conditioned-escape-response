@@ -53,7 +53,7 @@ generated using the code provided in the `/model` folder.
 
 1. **Simulate the model:** Run `/model/sim_data.m` to simulate the model. 
 2. **Calculate group properties:** Run `model/grp_properties.m` to generate figure 2g–h, 
-figure 3, figure 4a–b, and electronic supplementary material figures S7 and S8. 
+figure 3, figure 4a–b, and electronic supplementary material figures S9. 
 3. **Leader-follower interaction network:** Run `/model/pert_test_exp.m` to construct the 
 leader-follower network described in Section 3b of the main text. This script 
 generates a `.csv` file containing the leader-follower data. Run `/model/interaction_net_ana.m` 
@@ -65,9 +65,9 @@ obtained from the model.
 ## Code for results from the null model of collective escape dynamics
 
 1. **Simulate the model:** Run `/null_model/sim_data_mp.m` to simulate the null model described 
-in the electronic supplementary material section S3.
+in the electronic supplementary material section S1.
 2. **Calculate group properties:** Run `/null_model/grp_properties.m` to generate electronic 
-supplementary material figure S4. This code also generates the mean group speed for the null model, 
+supplementary material figure S3. This code also generates the mean group speed for the null model (figure S6), 
 which can be compared with figure 2g of the collective escape model. 
 3. **Leader-follower interaction network:** Run `/null_model/pert_test_exp.m` to construct the 
 leader-follower network described in Section 3b of the main text. This script 

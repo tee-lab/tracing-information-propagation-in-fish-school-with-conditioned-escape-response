@@ -53,7 +53,7 @@ generated using the code provided in the `/model` folder.
 
 1. **Simulate the model:** Run `/model/sim_data.m` to simulate the model. 
 2. **Calculate group properties:** Run `model/grp_properties.m` to generate figure 2g–h, 
-figure 3, figure 4a–b, and electronic supplementary material figures S9. 
+figure 3, figure 4a–b, and electronic supplementary material figures S9 and figure S10. 
 3. **Leader-follower interaction network:** Run `/model/pert_test_exp.m` to construct the 
 leader-follower network described in Section 3b of the main text. This script 
 generates a `.csv` file containing the leader-follower data. Run `/model/interaction_net_ana.m` 

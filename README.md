@@ -80,8 +80,8 @@ from the null model.
 ## Supplementary figures
 
 1. `/main_text/col_beh_ana.m` generates electronic supplementary material figure S1, S5
-2. `/sm/fig_s5a.m` generates electronic supplementary material figure S4a
-3. `/sm/fig_s5bc.m` generates electronic supplementary material figure S4b-c. 
+2. `/sm/fig_s4a.m` generates electronic supplementary material figure S4a
+3. `/sm/fig_s4bc.m` generates electronic supplementary material figure S4b-c. 
 
 
 

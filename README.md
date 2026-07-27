@@ -27,10 +27,10 @@ the folder.
 ## Code for figures 1e and 2a, b, c
 
 **Trajectories of individual fish, speed, polarisation, and dispersion from a representative 
-trial of the collective escape response:** run `/main_text/figure_1e_2ace.m` to generate figure 1e 
+trial of the collective escape response:** run `/main_text/figure_1e_2abc.m` to generate figure 1e 
 and figure 2a–c.
 
-## Code for figure 2d–f, figure 3, and figure 4a–b
+## Code for figure 2d-f, figure 3, and figure 4a–b
 
 Run `main_text/col_beh_ana.m`: This code calculates the average polarisation, dispersion, and 
 speed as a function of normalised time *t*. It also calculates the probability density functions 

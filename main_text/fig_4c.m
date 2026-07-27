@@ -256,13 +256,13 @@ for l = 1:n
 
 end
 
-if ~isempty(l_id)
-    struct_graph = digraph(f_id, l_id, avg_edges, n);
-    plot(struct_graph, 'Marker', 'o', 'NodeColor', '#2c7fb8', 'MarkerSize', ...
-        6, 'LineWidth', 3, 'NodeLabel', 1:n, 'EdgeLabel', struct_graph.Edges.Weight, ...
-        'EdgeColor', '#bcbddc', ...
-        'ArrowSize', 12, 'NodeFontSize', 12, 'NodeFontName', 'Arial')
-end
+% if ~isempty(l_id)
+%     struct_graph = digraph(f_id, l_id, avg_edges, n);
+%     plot(struct_graph, 'Marker', 'o', 'NodeColor', '#2c7fb8', 'MarkerSize', ...
+%         6, 'LineWidth', 3, 'NodeLabel', 1:n, 'EdgeLabel', struct_graph.Edges.Weight, ...
+%         'EdgeColor', '#bcbddc', ...
+%         'ArrowSize', 12, 'NodeFontSize', 12, 'NodeFontName', 'Arial')
+% end
 
 size(pval_cc_net,1)/size(cc_pt_trl_nnan_all,1)
 sum(sum(isnan(cc_pt_trl_nnan_all)))

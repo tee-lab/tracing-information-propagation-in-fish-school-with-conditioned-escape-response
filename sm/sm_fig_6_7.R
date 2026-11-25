@@ -11,6 +11,9 @@ library(ggeffects)
 
 # data
 
+err_bar_width <- 0.1
+lw <- 1.2
+
 df.dist.to.cf <- read.csv('dist_to_cf_data.csv', header = F)
 col.names <- c("video", "f.id", "dcf")
 colnames(df.dist.to.cf) <- col.names
@@ -106,8 +109,8 @@ pd <- position_dodge(width = 0.5)
 # 3. Plot
 plt.dfc <- ggplot(df.sum.dist.cf, aes(x = f.id, y = emmean, color = series, group = dodge_group)) +
   geom_point(aes(shape = series), size = 7, position = pd) +
-  geom_errorbar(aes(ymin = emmean - SE, ymax = emmean + SE), width = 0.2, 
-                position = pd, linewidth = 1.2) +
+  geom_errorbar(aes(ymin = emmean - SE, ymax = emmean + SE), width = err_bar_width, 
+                position = pd, linewidth = lw) +
   
   scale_color_manual(
     name = NULL,
@@ -220,8 +223,8 @@ df.sum.dist.tw <- bind_rows(
 plt.dtw <- ggplot(df.sum.dist.tw, aes(x = f.id,y = emmean, 
                                       color = group_label, group = group_label)) +
   geom_point(size = 7, position = pd) + 
-  geom_errorbar(aes(ymin = emmean - SE, ymax = emmean + SE), width = 0.2, 
-                position = pd, linewidth = 1.2) + 
+  geom_errorbar(aes(ymin = emmean - SE, ymax = emmean + SE), width = err_bar_width, 
+                position = pd, linewidth = lw) + 
   scale_color_manual(
     name = NULL,
     values = c(
@@ -306,7 +309,7 @@ plt.psi <- ggplot(df.sum.psi, aes(x = f.id, y = emmean,
                                   color = group_label, group = group_label)) +
   geom_point(size = 7, position = pd) + 
   geom_errorbar(aes(ymin = emmean - SE, ymax = emmean + SE),
-                width = 0.2, position = pd, linewidth = 1.2) + 
+                width = err_bar_width, position = pd, linewidth = lw) + 
   scale_color_manual(
     name = NULL,
     values = c(
@@ -393,7 +396,7 @@ df.sum.phi <- bind_rows(
 plt.phi <- ggplot(df.sum.phi, aes(x = f.id, y = emmean, color = group_label, group = group_label)) +
   geom_point(size = 7, position = pd) +
   geom_errorbar(aes(ymin = emmean - SE, ymax = emmean + SE), 
-                width = 0.2, position = pd, linewidth = 1.2) +
+                width = err_bar_width, position = pd, linewidth = lw) +
   scale_color_manual(
     name = NULL,
     values = c(
@@ -458,7 +461,7 @@ df.sum.phi.tw <- bind_rows(
 plt.phi.tw <- ggplot(df.sum.phi.tw, aes(x = f.id, y = emmean, color = group_label, group = group_label)) +
   geom_point(size = 7, position = pd) +
   geom_errorbar(aes(ymin = emmean - SE, ymax = emmean + SE), 
-                width = 0.2, position = pd, linewidth = 1.2) +
+                width = err_bar_width, position = pd, linewidth = lw) +
   scale_color_manual(
     name = NULL,
     values = c(

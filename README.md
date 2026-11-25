@@ -2,7 +2,7 @@
 
 The codes are tested to run on: 
   - MATLAB Version: 25.2.0.3177638 (R2025b). Ensure that the `Signal processing` and `Econometrics` toolboxes are installed. 
-  - R Version 4.4.2; R Core Team, and we used the \texttt{lme4} package (version 1.1.36).
+  - R Version 4.4.2; R Core Team, and we used the `lme4` package (version 1.1.36).
 
 ## Data
 

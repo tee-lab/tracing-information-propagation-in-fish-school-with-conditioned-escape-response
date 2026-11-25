@@ -91,7 +91,7 @@ for e = 1:no_exp
                     speed_fish_pt = all_bd_data.(strcat('speed_t_ex_', num2str(e_pt))); % input what speed data to use
                     tcross_min_pt = tcross_data.(strcat('tcross_min', num2str(e_pt)));
                     tcross_max_pt = tcross_data.(strcat('tcross_max', num2str(e_pt)));
-                    rank_id_centre_pt = tcross_data.(strcat('rank_id_centre', num2str(e_pt)));
+                    rank_id_min_pt = tcross_data.(strcat('rank_id_min', num2str(e_pt)));
                     time_light_on_pt = all_bd_data.(strcat('frame_light_on_ex_', num2str(e_pt)));
 
                     % diff_time_pt = min(min_ts_length,tcross_min_pt - 1);
@@ -101,11 +101,11 @@ for e = 1:no_exp
                     t_esp_pt = time_light_on_pt; % here change to tcross_min or time_light_on
 
                     if treat_count == 1
-                        speed_cc_pt = speed_fish_pt(rank_id_centre_pt,1:(t_esp_pt - diff_time_pt));
+                        speed_cc_pt = speed_fish_pt(rank_id_min_pt,1:(t_esp_pt - diff_time_pt));
                     elseif treat_count == 2
-                        speed_cc_pt = speed_fish_pt(rank_id_centre_pt,t_esp_pt:tcross_max_pt);
+                        speed_cc_pt = speed_fish_pt(rank_id_min_pt,t_esp_pt:tcross_max_pt);
                     elseif treat_count == 3
-                        speed_cc_pt = speed_fish_pt(rank_id_centre_pt,(tcross_max_pt + diff_time_pt):last_time_pt);
+                        speed_cc_pt = speed_fish_pt(rank_id_min_pt,(tcross_max_pt + diff_time_pt):last_time_pt);
                     end
         
                     if size(speed_cc_pt,2) < min_ts_length

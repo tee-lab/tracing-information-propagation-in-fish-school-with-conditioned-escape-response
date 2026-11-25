@@ -53,12 +53,6 @@ tl_minor = 0.0005;
 
 pos_t = nan(n,2,tot_time); % store position data
 
-% intercept if there are missing data. ideally we shouldnt have any missing
-% data in the new tracks by Fathimath.
-pos_interp = nan(n,2,tot_time); 
-t_interp = 1:tot_time;
-mthd = 'spline'; % method to interpolate.
-
 for i = 1:n 
     
     fname = strcat(file_name,num2str(i),'.csv'); % name of the file for 'i'th fish
@@ -95,18 +89,6 @@ for i = 1:n
     pos_t(i,1,1:tot_time) = pos_x;
     pos_t(i,2,1:tot_time) = pos_y;
 
-    t_interp = 1:tot_time;
-    
-    % again we there shouldnt be missing values in beedance tracks
-    pos_interp_x = squeeze(pos_t(i,1,:));
-    pos_interp_y = squeeze(pos_t(i,2,:));
-    xq_nan = t_interp(isnan(pos_interp_x));
-    yq_nan = t_interp(isnan(pos_interp_y));
-    pos_interp_x(xq_nan) = interp1(t_interp(~isnan(pos_interp_x))*dt, pos_interp_x(~isnan(pos_interp_x)), xq_nan*dt, mthd);
-    pos_interp_y(yq_nan) = interp1(t_interp(~isnan(pos_interp_y))*dt, pos_interp_y(~isnan(pos_interp_y)), yq_nan*dt, mthd);
-    pos_interp(i,1,:) = pos_interp_x;
-    pos_interp(i,2,:) = pos_interp_y;
-
 end
 
 pos_t(:,1,:) = smoothdata(pos_t(:,1,:), 3, 'gaussian', smooth_window);
@@ -122,14 +104,6 @@ vel_t(:,2,1:end-del_step) = vel_y;
 
 % calculate speed.
 speed_t = squeeze(vecnorm(vel_t,2,2));
-
-% this should be same as vel_t and speed_t for beedance tracks
-vel_interp = nan(n,2,tot_time);
-vel_x_interp = (pos_interp(:,1,2:end) - pos_interp(:,1,1:(end-1)))/dt;
-vel_y_interp = (pos_interp(:,2,2:end) - pos_interp(:,2,1:(end-1)))/dt;
-vel_interp(:,1,2:end) = vel_x_interp;
-vel_interp(:,2,2:end) = vel_y_interp;
-speed_interp = squeeze(vecnorm(vel_interp,2,2));
 
 %% identifying when the conditioned fish first crosses the boarder
 

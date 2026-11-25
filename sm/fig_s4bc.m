@@ -23,10 +23,11 @@ ini_color = "#33b1ff";
 esp_color = "#fa4d56";
 relax_color = "#198038";
 
-%% calculate relative orientation and viewing angle
+%% calculate relative orientation, viewing angle and angle of naive fish to barrier
 
 psi_ic = nan(n-1, no_exp); % viewing angle when the light was turned on
 phi_ic = nan(n-1, no_exp); % relative orientation when light was turned on
+phi_itw = nan(n-1, no_exp); % relative orientation of fish to tankwall
 
 for e = 1:no_exp
 
@@ -59,16 +60,20 @@ for e = 1:no_exp
     % calculating relative orientation
     phi_ic_temp = dot(vel_naive, vel_con, 2);
     phi_ic(:,e) = acos(phi_ic_temp);
+
+    % calculate relative orientation to tankwall
+    phi_tw = repmat([1,0], n-1, 1);
+    phi_itw_temp = dot(vel_naive, phi_tw, 2);
+    phi_itw(:,e) = acos(phi_itw_temp);
     
 end
 
 %% plotting \psi
 
-psi_ic = psi_ic';
 psi_ic = psi_ic*180/pi;
 
-mean_psi_ic = mean(psi_ic,1);
-std_psi_ic = std(psi_ic,1);
+mean_psi_ic = mean(psi_ic,2);
+std_psi_ic = std(psi_ic,0,2);
 error_psi_ic = (std_psi_ic)/sqrt(no_exp);
 
 % model
@@ -92,8 +97,8 @@ errorbar((2:n) + 0.05, mean_psi_ic_model, se_psi_ic_model, ...
     'MarkerFaceColor',  ini_color, 'color', ini_color, 'LineWidth', lw_plot, ...
     'MarkerSize', 10)
 
-legend({'Experiment', 'Model'}, 'Location', 'southwest')
-legend('Box', 'off')
+% legend({'Experiment', 'Model'}, 'Location', 'southwest')
+% legend('Box', 'off')
 
 set(gca, 'XLim', [1.8 n+0.2], 'YLim', [0,120], 'XTick', 1:n, ...
     'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
@@ -106,11 +111,10 @@ exportgraphics(gca, 'psi_data.pdf', 'ContentType', 'vector')
 
 %% plotting relative orientation
 
-phi_ic = phi_ic';
 phi_ic = phi_ic*180/pi;
 
-mean_phi_ic = mean(phi_ic,1);
-std_phi_ic = std(phi_ic,1);
+mean_phi_ic = mean(phi_ic,2);
+std_phi_ic = std(phi_ic,0,2);
 error_phi_ic = (std_phi_ic)/sqrt(no_exp);
 
 % model
@@ -141,6 +145,36 @@ set(gca, 'XLim', [1.8 n+0.2], 'YLim', [0,120], 'XTick', 1:n, ...
 
 xlabel('Crossing rank', 'FontSize', 27)
 ylabel('Relative orientation (in degree)', 'FontSize', 27)
+
+exportgraphics(gca, 'phi_data.pdf', 'ContentType', 'vector')
+
+%% plotting relative orientation to tank wall
+
+phi_itw = phi_itw*180/pi;
+
+mean_phi_itw = mean(phi_itw,2);
+std_phi_itw = std(phi_itw,0,2);
+error_phi_itw = (std_phi_itw)/sqrt(no_exp);
+
+% model
+
+plt_count = plt_count + 1;
+fig = figure(plt_count);
+fig.Position = [300, 1200, 800, 700];
+
+errorbar((2:n)-0.05, mean_phi_itw, error_phi_itw, "o", 'MarkerEdgeColor',  ini_color, ...
+    'MarkerFaceColor',  ini_color, 'Color', ini_color, 'LineWidth', lw_plot, ...
+    'MarkerSize', 10)
+
+% legend({'Experiment', 'Model'}, 'Location', 'southwest')
+% legend('Box', 'off')
+
+set(gca, 'XLim', [1.8 n+0.2], 'YLim', [0,120], 'XTick', 1:n, ...
+    'LineWidth', lw_axis, 'Xcolor', 'k', 'YColor', 'k', ...
+    'FontSize', font_size, 'FontName', 'Helvetica')
+
+xlabel('Crossing rank', 'FontSize', 27)
+ylabel('Relative orientation to tank wall (in degree)', 'FontSize', 25)
 
 exportgraphics(gca, 'phi_data.pdf', 'ContentType', 'vector')
    

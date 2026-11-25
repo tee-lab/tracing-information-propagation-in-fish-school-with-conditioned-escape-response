@@ -43,7 +43,7 @@ relax_color = "#097969";
 font_size = 30;
 lw_plot = 2;
 lw_axis = 2;
-lw_xline = 4;
+lw_xline = 5;
 x_min_lim = -0.5;
 x_max_lim = 3;
 tl_major = 0.02;
@@ -206,6 +206,9 @@ tcross_centre_diff = fcross_tcentre(rank_id_centre(2:end)) - fcross_tcentre(rank
 
 %% group polarisation
 
+md_x_color = "#4db6ff";
+md_y_color = "#52a196";
+
 vel_norm = vel_fish./(vecnorm(vel_fish,2,2)+eps);
 vn_x = squeeze(vel_norm(:,1,:)); % vx
 vn_y = squeeze(vel_norm(:,2,:)); % vy
@@ -223,19 +226,19 @@ plt_count = plt_count + 1;
 fig = figure(plt_count);
 fig.Position = [300, 1200, 800, 700];
 
-plot(t_plt, m(t_st:t_skip:t_end), 'LineWidth', lw_plot, 'Color', two_d_color)
+plot(t_plt, m(t_st:t_skip:t_end), 'LineWidth', 1.25, 'Color', two_d_color)
 hold on
-plot(t_plt, mx(t_st:t_skip:t_end), 'LineWidth', lw_plot, 'Color', ini_color)
+plot(t_plt, mx(t_st:t_skip:t_end), 'LineWidth', 1.25, 'Color', md_x_color)
 hold on
-plot(t_plt, my(t_st:t_skip:t_end), 'LineWidth', lw_plot, 'Color', relax_color)
+plot(t_plt, my(t_st:t_skip:t_end), 'LineWidth', 1.25, 'Color', md_y_color)
 hold on
 xline(0, '--r', 'LineWidth', lw_xline)
 hold on
 xline(1, '--r', 'LineWidth', lw_xline)
 hold off
 
-legend({'P', 'P_x', 'P_y'}, 'Location', 'best')
-legend('boxoff')
+% legend({'P', 'P_x', 'P_y'}, 'Location', 'best')
+% legend('boxoff')
 
 set(gca, 'XLim', [x_min_lim x_max_lim], 'YLim', [0, 1], 'YTick', 0:.2:1, ...
     'XMinorTick', 'on', 'YMinorTick', 'on', 'TickLength', [tl_major, tl_minor],...
@@ -247,6 +250,8 @@ ax.YAxis.MinorTickValues = 0:.1:1;
 
 xlabel('')
 ylabel('Polarisation')
+
+exportgraphics(gca, 'fig_2b.pdf', 'ContentType', 'vector')
 
 %% cohestion
 
@@ -293,9 +298,9 @@ fig.Position = [300, 1200, 800, 700];
 
 plot(t_plt, mean_dist_gc(t_st:t_skip:t_end), 'LineWidth', lw_xline, 'Color', two_d_color)
 hold on
-plot(t_plt, mean_gc_x(t_st:t_skip:t_end), 'LineWidth', lw_xline, 'Color', ini_color)
+plot(t_plt, mean_gc_x(t_st:t_skip:t_end), 'LineWidth', lw_xline, 'Color', md_x_color)
 hold on
-plot(t_plt, mean_gc_y(t_st:t_skip:t_end), 'LineWidth', lw_xline, 'Color', relax_color)
+plot(t_plt, mean_gc_y(t_st:t_skip:t_end), 'LineWidth', lw_xline, 'Color', md_y_color)
 hold on
 plot(t_plt, mean_dist_pf_gc_wc(t_st:t_skip:t_end), 'LineWidth', lw_xline, 'Color', 'k')
 hold on
@@ -314,8 +319,10 @@ ax.YAxis.MinorTickValues = 0:1:10;
 
 xlabel('')
 ylabel('Dispersion (cm)')
-legend({'D', 'D_x', 'D_y', 'D_wc'}, 'Location', 'best')
-legend('boxoff')
+% legend({'D', 'D_x', 'D_y', 'D_{wc}'}, 'Location', 'best')
+% legend('boxoff')
+
+exportgraphics(gca, 'fig_2c.pdf', 'ContentType', 'vector')
 
 %% speed time series
 
@@ -359,8 +366,10 @@ for i = 1:n
 
 end
 
-xlabel(t, 'Normalised time', 'FontSize', 25, 'FontName', 'Helvetica')
+% xlabel(t, 'Normalised time', 'FontSize', 25, 'FontName', 'Helvetica')
 ylabel(t, 'Speed (cm/s)', 'FontSize', 25, 'FontName', 'Helvetica')
+
+exportgraphics(gca, 'fig_2a.pdf', 'ContentType', 'vector')
 
 %% x time series
 

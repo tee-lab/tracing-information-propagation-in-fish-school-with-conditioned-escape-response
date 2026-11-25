@@ -537,6 +537,10 @@ sprintf('Fraction of times conditioned fish is not first to cross last barrier: 
 
 %% group polarisation
 
+two_d_color = "#8FA7CC";
+md_x_color = "#36454F";
+md_y_color = "#52a196";
+
 x_min_lim = -0.5;
 x_max_lim = 3;
 
@@ -622,11 +626,11 @@ fig.Position = [300, 1200, 800, 700];
 errorbar(t_edges, mean_pol, se_pol, 'o-', 'Color', '#A52A2A', 'LineWidth', lw_plot, ...
         'MarkerFaceColor', '#A52A2A')
 hold on
-errorbar(t_edges, mean_px, se_px, 'o-', 'Color', ini_color, 'LineWidth', lw_plot, ...
-        'MarkerFaceColor', ini_color)
+errorbar(t_edges, mean_px, se_px, 'o-', 'Color', md_x_color, 'LineWidth', lw_plot, ...
+        'MarkerFaceColor', md_x_color)
 hold on
-errorbar(t_edges, mean_py, se_py, 'o-', 'Color', relax_color, 'LineWidth', lw_plot, ...
-        'MarkerFaceColor', relax_color)
+errorbar(t_edges, mean_py, se_py, 'o-', 'Color', md_y_color, 'LineWidth', lw_plot, ...
+        'MarkerFaceColor', md_y_color)
 hold on
 
 xline(0, '--r', 'LineWidth', lw_xline)
@@ -645,8 +649,10 @@ ax = gca;
 ax.XAxis.MinorTickValues = -1:0.5:x_max_lim;  % Minor X-ticks every 0.1
 ax.YAxis.MinorTickValues = 0:.1:1;
 
-xlabel('Normalised time')
+% xlabel('Normalised time')
 ylabel('Mean polarisation')
+
+exportgraphics(gca, 'fig_2d.pdf', 'ContentType', 'vector')
 
 %% Group cohesion 2d.
 
@@ -763,11 +769,11 @@ fig.Position = [300, 1200, 800, 700];
 errorbar(t_edges, mean_gc, se_gc, 'o-', 'Color', '#A52A2A', 'LineWidth', lw_plot, ...
         'MarkerFaceColor', '#A52A2A')
 hold on
-errorbar(t_edges, mean_gcx, se_gcx, 'o-', 'Color', ini_color, 'LineWidth', lw_plot, ...
-        'MarkerFaceColor', ini_color)
+errorbar(t_edges, mean_gcx, se_gcx, 'o-', 'Color', md_x_color, 'LineWidth', lw_plot, ...
+        'MarkerFaceColor', md_x_color)
 hold on
-errorbar(t_edges, mean_gcy, se_gcy, 'o-', 'Color', relax_color, 'LineWidth', lw_plot, ...
-        'MarkerFaceColor', relax_color)
+errorbar(t_edges, mean_gcy, se_gcy, 'o-', 'Color', md_y_color, 'LineWidth', lw_plot, ...
+        'MarkerFaceColor', md_y_color)
 hold on
 errorbar(t_edges, mean_gc_wo_con, se_gc_wo_con, 'o-', ...
     'Color', 'k', 'LineWidth', lw_plot, 'MarkerFaceColor', 'k')
@@ -781,7 +787,7 @@ hold off
 legend({'D', 'D_x', 'D_y', 'D_{wc}'}, 'Location', 'northeast', 'FontSize', 32)
 legend('Box', 'off')
 
-xlabel('Normalised time')
+% xlabel('Normalised time')
 ylabel('Mean dispersion (cm)')
 
 set(gca, 'XLim', [x_min_lim x_max_lim], 'YLim', [0,8], 'YTick', 0:2:10, ...
@@ -792,6 +798,8 @@ set(gca, 'XLim', [x_min_lim x_max_lim], 'YLim', [0,8], 'YTick', 0:2:10, ...
 ax = gca;
 ax.XAxis.MinorTickValues = -1:0.5:x_max_lim;  % Minor X-ticks every 0.1
 ax.YAxis.MinorTickValues = 0:1:10;
+
+exportgraphics(gca, 'fig_2e.pdf', 'ContentType', 'vector')
 
 %% Time difference between crossing the first, centre and last barrier
 
@@ -1206,8 +1214,8 @@ plot(spd_relax_edges_model, spd_relax_hist_model, '--', ...
     'Color', relax_color, 'LineWidth', lw_plot)
 hold on
 
- legend({'Initial', 'Escape', 'Relax'}, 'Location', 'best')
- legend('Box', 'off')
+% legend({'Initial', 'Escape', 'Relax'}, 'Location', 'best')
+% legend('Box', 'off')
 
 set(gca, 'LineWidth', lw_axis, 'XLim', [0.03,30], 'XTick', 0:10:30, ...
     'YLim', [0 0.15], 'YTick', 0:0.04:0.16, ...
@@ -1220,6 +1228,8 @@ ax.YAxis.MinorTickValues = 0:.02:10;
 
 xlabel('Speed (cm/s)')
 ylabel('PDF')
+
+exportgraphics(gca, 'speed_disp.pdf', 'ContentType', 'vector')
 
 %% plotting polarisation in ini, esp and relax phase
 
@@ -1269,8 +1279,10 @@ ax.YAxis.MinorTickValues = 0:.5:5;
 xlabel('Polarisation')
 ylabel('PDF')
 
-legend({'Initial', 'Escape', 'Relax'}, 'Location', 'northwest')
-legend('Box', 'off')
+% legend({'Initial', 'Escape', 'Relax'}, 'Location', 'northwest')
+% legend('Box', 'off')
+
+exportgraphics(gca, 'pol_dist.pdf', 'ContentType', 'vector')
 
 %% plotting distribution of group cohesion
 
@@ -1306,8 +1318,8 @@ plot(gc_esp_edges_model, gc_esp_hist_model, '--', 'Color', esp_color, 'LineWidth
 hold on
 plot(gc_relax_edges_model, gc_relax_hist_model, '--', 'Color', relax_color, 'LineWidth', lw_plot)
 
-legend({'Initial', 'Escape', 'Relax'}, 'Location', 'best')
-legend('Box', 'off')
+% legend({'Initial', 'Escape', 'Relax'}, 'Location', 'best')
+% legend('Box', 'off')
 
 set(gca, 'LineWidth', lw_axis, 'XLim', [0,12], 'XTick', 0:2:12, ...
     'YLim', [0,.9], 'YTick', 0:0.2:1, ...
@@ -1320,6 +1332,8 @@ ax.YAxis.MinorTickValues = 0:.1:1;
 
 xlabel('Dispersion (cm)')
 ylabel('PDF')
+
+exportgraphics(gca, 'disp_dist.pdf', 'ContentType', 'vector')
 
 %% storing mean speed from ini and relax to compare speed of different rank fish
 

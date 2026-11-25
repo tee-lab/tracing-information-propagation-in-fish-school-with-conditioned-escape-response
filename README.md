@@ -75,9 +75,12 @@ from the null model.
 
 ## Supplementary figures
 
-1. `/sm/sm_fig_1.R` generates electronic supplementary material figure S1. Mean speeds in the `initial` and `relaxation` phases are given in the files `mean_spd_cr_ini_video_data.csv` and `mean_spd_cr_relax_video_data.csv`, respectively. 
-2. `/main_text/col_beh_ana.m` generates electronic supplementary material figure S8, and S10a.
-3. `/sm/sm_fig_6_7.R` generates electronic supplementary material figure S6 and S7. All the required data to generate the figures are in the same folder, `/sm`.
+- `/sm/sm_fig_1.R` generates electronic supplementary material figure S1. Mean speeds in the `initial` and `relaxation` phases are given in the files `mean_spd_cr_ini_video_data.csv` and `mean_spd_cr_relax_video_data.csv`, respectively. 
+- `/sm/add_data/conf_all_crossing/fig_s4ah.m` generates electronic supplementary figure S4a-h. Tracks from additional confounded trials are included in the same folder. 
+- `/sm/add_data/conf_all_crossing/fig_s4i.m` generates electronic supplementary figure S4i.
+- `/sm/sm_fig_6_7.R` generates electronic supplementary material figure S6 and S7. All the required data to generate the figures are in the same folder, `/sm`.
+- `/main_text/col_beh_ana.m` generates electronic supplementary material figure S8, and S10a.
+- `/sm/add_data/unsucc_escape/fig_s16.m` generates electronic supplementary figure S16. Data for the speed time series from the main text and the confounded trials are included in the same folder.
 
 
 

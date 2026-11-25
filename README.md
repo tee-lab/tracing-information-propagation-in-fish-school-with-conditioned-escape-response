@@ -76,9 +76,9 @@ from the null model.
 
 ## Supplementary figures
 
-1. `/main_text/col_beh_ana.m` generates electronic supplementary material figure S1, S5, and S7a.
-2. `/sm/fig_s4a.m` generates electronic supplementary material figure S4a
-3. `/sm/fig_s4bc.m` generates electronic supplementary material figure S4b-c. 
+1. `/sm/sm_fig_1.R` generates electronic supplementary material figure S1. Mean speeds in the `initial` and `relaxation` phases are given in the files `mean_spd_cr_ini_video_data.csv` and `mean_spd_cr_relax_video_data.csv`, respectively. 
+2. `/main_text/col_beh_ana.m` generates electronic supplementary material figure S8, and S10a.
+3. `/sm/sm_fig_6_7.R` generates electronic supplementary material figure S6 and S7. All the required data to generate the figures are in the same folder, `/sm`.
 
 
 

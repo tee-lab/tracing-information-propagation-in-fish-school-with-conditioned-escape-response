@@ -10,11 +10,6 @@ load("all_cross_add_data.mat", "dt", "n", "no_exp", "tank_max_x", "tank_min_x", 
 time_scale = 2; % if 1 start time of escape is tcross_centre, if 2 then it is time of light on
 smooth_window = 5;
 
-min_cc_spd = 0.3; % minimum correlation strength
-max_delay = 75; % max delay
-min_lag = 20; % minimum lag for correlation to be significant
-min_ts_length = 150; % minimum frames to calculate correlation
-
 no_treat = 3; % ini, escape, relax
 t_cut_min = -0.5;
 t_cut_max = 3;

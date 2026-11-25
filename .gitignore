@@ -13,3 +13,12 @@
 *.jpeg
 *.html
 *.svg
+*.numbers
+*.dat
+*.txt
+*.docx
+*.xlsx
+*.mov
+*.npz
+*.npy
+*.npz

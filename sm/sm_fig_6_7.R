@@ -106,7 +106,8 @@ pd <- position_dodge(width = 0.5)
 # 3. Plot
 plt.dfc <- ggplot(df.sum.dist.cf, aes(x = f.id, y = emmean, color = series, group = dodge_group)) +
   geom_point(aes(shape = series), size = 7, position = pd) +
-  geom_errorbar(aes(ymin = emmean - SE, ymax = emmean + SE), width = 0.2, position = pd) +
+  geom_errorbar(aes(ymin = emmean - SE, ymax = emmean + SE), width = 0.2, 
+                position = pd, linewidth = 1.2) +
   
   scale_color_manual(
     name = NULL,
@@ -219,7 +220,8 @@ df.sum.dist.tw <- bind_rows(
 plt.dtw <- ggplot(df.sum.dist.tw, aes(x = f.id,y = emmean, 
                                       color = group_label, group = group_label)) +
   geom_point(size = 7, position = pd) + 
-  geom_errorbar(aes(ymin = emmean - SE, ymax = emmean + SE), width = 0.2, position = pd) + 
+  geom_errorbar(aes(ymin = emmean - SE, ymax = emmean + SE), width = 0.2, 
+                position = pd, linewidth = 1.2) + 
   scale_color_manual(
     name = NULL,
     values = c(
@@ -303,7 +305,8 @@ df.sum.psi <- bind_rows(
 plt.psi <- ggplot(df.sum.psi, aes(x = f.id, y = emmean, 
                                   color = group_label, group = group_label)) +
   geom_point(size = 7, position = pd) + 
-  geom_errorbar(aes(ymin = emmean - SE, ymax = emmean + SE), width = 0.2, position = pd) + 
+  geom_errorbar(aes(ymin = emmean - SE, ymax = emmean + SE),
+                width = 0.2, position = pd, linewidth = 1.2) + 
   scale_color_manual(
     name = NULL,
     values = c(
@@ -389,7 +392,8 @@ df.sum.phi <- bind_rows(
 
 plt.phi <- ggplot(df.sum.phi, aes(x = f.id, y = emmean, color = group_label, group = group_label)) +
   geom_point(size = 7, position = pd) +
-  geom_errorbar(aes(ymin = emmean - SE, ymax = emmean + SE), width = 0.2, position = pd) +
+  geom_errorbar(aes(ymin = emmean - SE, ymax = emmean + SE), 
+                width = 0.2, position = pd, linewidth = 1.2) +
   scale_color_manual(
     name = NULL,
     values = c(
@@ -453,7 +457,8 @@ df.sum.phi.tw <- bind_rows(
 
 plt.phi.tw <- ggplot(df.sum.phi.tw, aes(x = f.id, y = emmean, color = group_label, group = group_label)) +
   geom_point(size = 7, position = pd) +
-  geom_errorbar(aes(ymin = emmean - SE, ymax = emmean + SE), width = 0.2, position = pd) +
+  geom_errorbar(aes(ymin = emmean - SE, ymax = emmean + SE), 
+                width = 0.2, position = pd, linewidth = 1.2) +
   scale_color_manual(
     name = NULL,
     values = c(

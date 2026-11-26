@@ -1,12 +1,12 @@
 # Tracing information propagation in a fish school with a conditioned escape response
 
-The codes are tested to run on: 
-  - MATLAB Version: 25.2.0.3177638 (R2025b). Ensure that the `Signal processing` and `Econometrics` toolboxes are installed. 
+Codes are tested to run on: 
+  - MATLAB Version: 25.2.0.3177638 (R2025b). Ensure that the `Signal Processing` and `Econometrics` toolboxes are installed. 
   - R Version 4.4.2; R Core Team, and we used the `lme4` package (version 1.1.36).
 
 ## Data
 
-Tracked fish trajectory data used in Figure 1e are available in the `/main_text/` folder. Tracks 
+Tracked fish trajectory data used in figure 1e are available in the `/main_text/` folder. Tracks 
 of each fish are labelled as `Clip0036_1C_4N_E4_4_bee1.csv`, `Clip0036_1C_4N_E4_4_bee2.csv`, $\dots$, 
 `Clip0036_1C_4N_E4_4_bee5.csv`. The first, second, and third columns in the `.csv` files 
 represent the frame number (at 100 frames per second), the position along the x-axis (cm), 
@@ -81,6 +81,3 @@ from the null model.
 - `/sm/sm_fig_6_7.R` generates electronic supplementary material figure S6 and S7. All the required data to generate the figures are in the same folder, `/sm`.
 - `/main_text/col_beh_ana.m` generates electronic supplementary material figure S8, and S10a.
 - `/sm/add_data/unsucc_escape/fig_s16.m` generates electronic supplementary figure S16. Data for the speed time series from the main text and the confounded trials are included in the same folder.
-
-
-

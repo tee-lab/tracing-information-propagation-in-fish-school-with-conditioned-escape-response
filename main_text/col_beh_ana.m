@@ -377,8 +377,7 @@ for e = 1:no_exp
     speed_all = cat(1, speed_all, spd_all_temp);
 
     % constructing network based on speed
-    addpath('/Users/vivek/Library/CloudStorage/OneDrive-IndianInstituteofScience/IISc/phd/phd_thesis/1c_4n_project/tracked_data');
-
+   
     diff_time = 1;
     % last_time = tcross_max + diff_time + min_ts_length;
     last_time = tcross_max + min_ts_length;
